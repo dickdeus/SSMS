@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Stations</h2>
+<form class="mb-3" method="GET">
+  <div class="input-group">
+    <input type="text" name="search" class="form-control" placeholder="Search..." value="{{ search }}">
+    <button class="btn btn-outline-secondary">Search</button>
+    {% if session.get('role') != 'Support' %}
+      <a href="{{ url_for('add_station') }}" class="btn btn-primary ms-2">+ Add Station</a>
+    {% endif %}
+  </div>
+</form>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Name</th>
+      <th>Contact Name</th>
+      <th>Contact Number</th>
+      <th>IP</th>
+      <th>District</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in stations.items %}
+    <tr>
+    <td>{{ s.station_code }}</td>
+    <td>{{ s.station_name }}</td>
+    <td>{{ s.contact_name }}</td>
+    <td>{{ s.contact_number }}</td>
+    <td>{{ s.connect_IP_Address }}</td>
+    <td>{{ district_map[s.id] }}</td>
+    <td>
+      {% if session.get('role') != 'Support' %}
+        <a href="{{ url_for('edit_station', id=s.id) }}" class="btn btn-sm btn-warning">Edit</a>
+      {% endif %}
+    </td>
+  </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if stations.has_prev %}
+  <a href="{{ url_for('view_stations', page=stations.prev_num, search=search) }}">Previous</a>
+{% endif %}
+{% if stations.has_next %}
+  <a href="{{ url_for('view_stations', page=stations.next_num, search=search) }}">Next</a>
+{% endif %}
+{% endblock %}

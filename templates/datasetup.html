@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Data Setup</h2>
+<form method="POST" class="row g-3">
+  <div class="col-md-4">
+    <label>Type</label>
+    <select name="type" class="form-control">
+      <option value="region">Region</option>
+      <option value="district">District</option>
+      <option value="group">Group</option>
+    </select>
+  </div>
+  <div class="col-md-4">
+    <label>Name</label>
+    <input type="text" name="name" class="form-control">
+  </div>
+  <div class="col-md-4" id="region-select">
+    <label>Region (for Districts only)</label>
+    <select name="region_id" class="form-control">
+      {% for r in regions %}
+        <option value="{{ r.id }}">{{ r.region_name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-12">
+    <button class="btn btn-primary">Add</button>
+  </div>
+</form>
+
+<hr>
+<div class="row">
+  <div class="col-md-4">
+    <h5>Regions</h5>
+    <ul class="list-group">
+      {% for r in regions %}
+        <li class="list-group-item">{{ r.region_name }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="col-md-4">
+    <h5>Districts</h5>
+    <ul class="list-group">
+      {% for d in districts %}
+        <li class="list-group-item">{{ d.district_name }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="col-md-4">
+    <h5>Groups</h5>
+    <ul class="list-group">
+      {% for g in groups %}
+        <li class="list-group-item">{{ g.group_name }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

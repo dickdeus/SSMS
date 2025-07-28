@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Dashboard</h1>
+<div class="row">
+  <div class="col-md-3"><div class="card"><div class="card-body">Stations: {{ station_count }}</div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body">Users: {{ user_count }}</div></div></div>
+  <div class="col-md-6"><div class="card"><div class="card-body">Top Region: {{ top_region }}</div></div></div>
+</div>
+
+<h3 class="mt-4">Top 10 Regions with Most Stations</h3>
+<table class="table table-striped">
+  <tr><th>Region</th><th>Stations</th></tr>
+  {% for region, count in top_regions %}
+  <tr><td>{{ region }}</td><td>{{ count }}</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

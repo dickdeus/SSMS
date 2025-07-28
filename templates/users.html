@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Register User</h2>
+<form method="POST">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="mb-3"><label>First Name</label><input type="text" name="first_name" class="form-control"></div>
+      <div class="mb-3"><label>Last Name</label><input type="text" name="last_name" class="form-control"></div>
+      <div class="mb-3"><label>Phone</label><input type="text" name="phone_number" class="form-control"></div>
+    </div>
+    <div class="col-md-6">
+      <div class="mb-3"><label>Password</label><input type="password" name="password" class="form-control"></div>
+      <div class="mb-3"><label>District</label>
+        <select name="location" class="form-control">
+          {% for d in districts %}
+            <option value="{{ d.id }}">{{ d.district_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+      <label for="role_id">Role</label>
+      <select class="form-control" name="role_id" id="role_id" required>
+        <option value="1">Administrator</option>
+        <option value="2">Support</option>
+      </select>
+    </div>
+    </div>
+  </div>
+  <button class="btn btn-primary">Register</button>
+</form>
+
+<hr>
+<h3>All Users</h3>
+<table class="table table-bordered">
+  <thead><tr><th>Name</th><th>Phone</th><th>Role</th></tr></thead>
+  <tbody>
+    {% for u in users %}
+      <tr><td>{{ u.first_name }} {{ u.last_name }}</td><td>{{ u.phone_number }}</td><td>{{ u.role_id }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
