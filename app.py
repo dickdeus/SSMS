@@ -9,6 +9,7 @@ app.secret_key = 'your-secret-key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/systeam_support'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
+print(app.config['SQLALCHEMY_DATABASE_URI'])
 
 def login_required(f):
     @wraps(f)

@@ -1,44 +1,270 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Stations Support System</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | SSMS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Add smooth scrolling to entire page */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Success modal animation */
+        .success-modal {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .success-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .success-modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        /* Redirect message */
+        .redirect-message {
+            color: #666;
+            font-style: italic;
+            margin-top: 20px;
+            animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from {
+                opacity: 0.6;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
+
 <body>
-<div class="row justify-content-center mt-5">
-    <div class="col-md-5">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white text-center">
-                <h4>System Login</h4>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo">
+                <i class="fas fa-broadcast-tower"></i>
+                <h1>SSMS</h1>
             </div>
-            <div class="card-body">
-                {% with messages = get_flashed_messages() %}
-                  {% if messages %}
-                    {% for message in messages %}
-                      <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                      </div>
-                    {% endfor %}
-                  {% endif %}
-                {% endwith %}
-                <form method="POST" action="{{ url_for('login') }}">
-                    <div class="mb-3">
-                        <label for="phone_number" class="form-label">Phone Number</label>
-                        <input type="text" name="phone_number" class="form-control" id="phone_number" required>
+            <p>Stations Support and Management System</p>
+        </div>
+
+        <div class="form-container">
+            <!-- Login Form -->
+            <form id="login-form" class="active-form">
+                <h2>Welcome Back!</h2>
+                <p>Please login to your account</p>
+
+                <div class="form-group">
+                    <label for="phone_number">Phone number or Username</label>
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="phone_number" placeholder="Enter your phone number or username" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" id="password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                        <button type="button" class="show-password" id="show-login-password">
+                            <i class="fas fa-eye"></i>
+                        </button>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Login</button>
-                </form>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember-me"> Remember me
+                    </label>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn-login">Login</button>
+
+                
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signup-form" class="hidden-form">
+                <h2>Create Account</h2>
+                <p>Join us today to get started</p>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="signup-firstname">First Name</label>
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="signup-firstname" placeholder="First name" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-lastname">Last Name</label>
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="signup-lastname" placeholder="Last name" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-email">Email Address</label>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="signup-email" placeholder="Enter your email" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-username">Username</label>
+                    <div class="input-group">
+                        <i class="fas fa-at"></i>
+                        <input type="text" id="signup-username" placeholder="Choose a username" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="signup-password" placeholder="Create password" required>
+                            <button type="button" class="show-password" id="show-signup-password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-confirm">Confirm Password</label>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="signup-confirm" placeholder="Confirm password" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="terms-checkbox">
+                        <input type="checkbox" id="agree-terms" required>
+                        I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-signup">Create Account</button>
+
+                <div class="form-footer">
+                    <p>Already have an account? <a href="#" id="show-login">Login</a></p>
+                </div>
+            </form>
+        </div>
+
+        <!-- Success Modal -->
+        <div class="success-modal" id="success-modal">
+            <div class="modal-content">
+                <div class="modal-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2>Welcome, <span id="success-username">User</span>!</h2>
+                <p>You have successfully logged in to the Stations Support and Management System.</p>
+                <p class="redirect-message">Redirecting to the System...</p>
             </div>
         </div>
     </div>
-  <a href="{{ url_for('index') }}">Back home</a>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="systemlogin.js"></script>
+    <script>
+        // Add this to your existing systemlogin.js
+        document.addEventListener('DOMContentLoaded', function () {
+            // Your existing code...
+
+            // Scroll to top when showing forms
+            showSignup.addEventListener('click', function (e) {
+                e.preventDefault();
+                // Your existing form toggle code...
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            showLogin.addEventListener('click', function (e) {
+                e.preventDefault();
+                // Your existing form toggle code...
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // Modified login success handler
+            loginForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+
+                if (email && password) {
+                    const username = email.split('@')[0] || email;
+                    successUsername.textContent = username;
+                    document.getElementById('success-modal').classList.add('active');
+
+                    // Auto-scroll to success message
+                    document.getElementById('success-modal').scrollIntoView({ behavior: 'smooth' });
+
+                    // Countdown and redirect
+                    let seconds = 3;
+                    const countdownElement = document.querySelector('.redirect-message');
+                    const countdown = setInterval(function () {
+                        seconds--;
+                        countdownElement.textContent = `Redirecting to dashboard in ${seconds} seconds...`;
+                        if (seconds <= 0) {
+                            clearInterval(countdown);
+                            window.location.href = 'systemhome.html';
+                        }
+                    }, 1000);
+                } else {
+                    alert('Please fill in all fields');
+                }
+            });
+
+            // Modified signup success handler (similar to login)
+            signupForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                // Your existing validation code...
+
+                // On success:
+                const username = document.getElementById('signup-username').value;
+                successUsername.textContent = username;
+                document.getElementById('success-modal').classList.add('active');
+
+                // Auto-scroll to success message
+                document.getElementById('success-modal').scrollIntoView({ behavior: 'smooth' });
+
+                // Countdown and redirect
+                let seconds = 3;
+                const countdownElement = document.querySelector('.redirect-message');
+                const countdown = setInterval(function () {
+                    seconds--;
+                    countdownElement.textContent = `Redirecting to dashboard in ${seconds} seconds...`;
+                    if (seconds <= 0) {
+                        clearInterval(countdown);
+                        window.location.href = 'dashboard.html';
+                    }
+                }, 1000);
+            });
+        });
+    </script>
 </body>
+
 </html>
