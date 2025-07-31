@@ -68,7 +68,7 @@
 
         <div class="form-container">
             <!-- Login Form -->
-            <form id="login-form" class="active-form" method="POST" action="{{ url_for('login') }}">
+            <form id="login-form" class="active-form" method="post">
                 <h2>Welcome Back!</h2>
                 <p>Please login to your account</p>
 
@@ -76,7 +76,7 @@
                     <label for="phone_number">Phone number or Username</label>
                     <div class="input-group">
                         <i class="fas fa-user"></i>
-                        <input type="text" id="phone_number" placeholder="Enter your phone number or username" required>
+                        <input type="text" id="phone_number" name="phone_number" placeholder="Enter your phone number or username" required>
                     </div>
                 </div>
 
@@ -84,7 +84,7 @@
                     <label for="password">Password</label>
                     <div class="input-group">
                         <i class="fas fa-lock"></i>
-                        <input type="password" id="password" placeholder="Enter your password" required>
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
                         <button type="button" class="show-password" id="show-login-password">
                             <i class="fas fa-eye"></i>
                         </button>
@@ -189,7 +189,7 @@
         </div>
     </div>
 
-    <script src="systemlogin.js"></script>
+    <!-- <script src="systemlogin.js"></script> -->
     <script>
         // Add this to your existing systemlogin.js
         document.addEventListener('DOMContentLoaded', function () {
@@ -227,7 +227,7 @@
                     const countdownElement = document.querySelector('.redirect-message');
                     const countdown = setInterval(function () {
                         seconds--;
-                        countdownElement.textContent = `Redirecting to dashboard in ${seconds} seconds...`;
+                        countdownElement.textContent = Redirecting to dashboard in ${seconds} seconds...;
                         if (seconds <= 0) {
                             clearInterval(countdown);
                             window.location.href = 'systemhome.html';
@@ -256,7 +256,7 @@
                 const countdownElement = document.querySelector('.redirect-message');
                 const countdown = setInterval(function () {
                     seconds--;
-                    countdownElement.textContent = `Redirecting to dashboard in ${seconds} seconds...`;
+                    countdownElement.textContent = Redirecting to dashboard in ${seconds} seconds...;
                     if (seconds <= 0) {
                         clearInterval(countdown);
                         window.location.href = 'dashboard.html';

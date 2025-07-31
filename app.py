@@ -249,5 +249,15 @@ def auto_create_admin():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+        # Insert reference data if not exists
+        if not Group.query.first():
+            db.session.add(Group(group_name='Admin'))
+            db.session.commit()
+        if not Region.query.first():
+            db.session.add(Region(region_name='Default Region'))
+            db.session.commit()
+        if not District.query.first():
+            db.session.add(District(region_id=1, district_name='Default District'))
+            db.session.commit()
         auto_create_admin()
     app.run(debug=True)
