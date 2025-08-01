@@ -111,11 +111,14 @@ def view_stations():
         )
 
     stations = query.paginate(page=page, per_page=10)
+    regions = Region.query.all()
+    districts = District.query.all()
+    groups = Group.query.all()
     district_map = {
         s.id: District.query.get(s.location).district_name if District.query.get(s.location) else "N/A"
         for s in stations.items
     }
-    return render_template('stations.html', stations=stations, search=search, district_map=district_map)
+    return render_template('stations.html', stations=stations, regions=regions, search=search, districts=districts, groups=groups, district_map=district_map)
 
 @app.route('/stations/add', methods=['GET', 'POST'])
 @login_required

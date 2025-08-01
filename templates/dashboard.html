@@ -26,9 +26,7 @@
 
             <div class="nav-links" id="navLinks">
                 <a href="{{ url_for('index')}}" class="active"><i class="fas fa-home"></i> Home</a>
-                <a href="#"><i class="fas fa-info-circle"></i> About</a>
-                <a href="#"><i class="fas fa-concierge-bell"></i> Services</a>
-                <a href="#"><i class="fas fa-envelope"></i> Contact</a>
+                
 
                 <div class="nav-search">
                     <input type="text" placeholder="Search...">
@@ -62,7 +60,7 @@
         </header>
 
         <div class="dashboard-stickers">
-            <div class="sticker" id="stations-sticker">
+            <a class="sticker" id="stations-sticker" href="{{ url_for('view_stations') }}" style="text-decoration: none;">
                 <div class="sticker-icon">
                     <i class="fas fa-broadcast-tower"></i>
                 </div>
@@ -70,9 +68,9 @@
                     <h3>Number of Stations</h3>
                     <p class="counter" data-target="247">{{ station_count }}</p>
                 </div>
-            </div>
+            </a>
 
-            <div class="sticker" id="users-sticker">
+            <a class="sticker" id="users-sticker" href="{{ url_for('manage_users') }}" style="text-decoration: none;">
                 <div class="sticker-icon">
                     <i class="fas fa-users"></i>
                 </div>
@@ -80,7 +78,7 @@
                     <h3>Number of Users</h3>
                     <p class="counter" data-target="84">{{ user_count }}</p>
                 </div>
-            </div>
+            </a>
 
             <div class="sticker" id="region-sticker">
                 <div class="sticker-icon">
@@ -88,7 +86,7 @@
                 </div>
                 <div class="sticker-info">
                     <h3>Region with Highest Stations</h3>
-                    <p>Central Region</p>
+                    <p>{{ top_region }}</p>
                     <span class="highlight">{{ top_region }}</span>
                 </div>
             </div>
@@ -99,8 +97,8 @@
                 </div>
                 <div class="sticker-info">
                     <h3>District with Highest Stations</h3>
-                    <p>Capital District</p>
-                    <span class="highlight">(32 stations)</span>
+                    <p>{{ top_district}}</p>
+                    <span class="highlight"></span>
                 </div>
             </div>
         </div>

@@ -25,9 +25,6 @@
 
             <div class="nav-links" id="navLinks">
                 <a href="{{ url_for('index')}}" class="active"><i class="fas fa-home"></i> Home</a>
-                <a href="#"><i class="fas fa-info-circle"></i> About</a>
-                <a href="#"><i class="fas fa-concierge-bell"></i> Services</a>
-                <a href="#"><i class="fas fa-envelope"></i> Contact</a>
 
                 <div class="nav-search">
                     <input type="text" placeholder="Search...">
@@ -51,6 +48,9 @@
     </nav>
 
 
+
+
+
     <div class="container">
         <header>
             <h1><i class="fas fa-broadcast-tower"></i> Station Management</h1>
@@ -69,47 +69,65 @@
             </ul>
         </nav>
 
+
+
+
+
+
+
+
+
         <div class="content-section" id="register-section">
             <h2><i class="fas fa-plus-circle"></i> Register New Station</h2>
             <div class="form-container">
-                <form id="station-form">
+                <form id="station-form" action="{{ url_for('view_stations') }}" method="POST">
                     <div class="form-group">
-                        <label for="station-name">Station Name</label>
-                        <input type="text" id="station-name" placeholder="Enter station name" required>
+                        <label for="station_name">Station Name</label>
+                        <input type="text" id="station_name" placeholder="Enter station name" required>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label for="station-region">Region</label>
-                            <select id="station-region" required>
-                                <option value="">Select Region</option>
-                                <option value="central">Mbeya</option>
-                                <option value="northern">Songwe</option>
-                                <option value="eastern">Rukwa</option>
-                                <option value="western">Dodoma</option>
-                            </select>
+                            <input list="region-list" type="text" id="station-region">
+                            <datalist id="region-list">
+                                {% for r in regions %}
+                                <option value="{{r.id}}">{{ r.region_name }}</option>
+                                {% endfor %}
+                            </datalist>
                         </div>
 
                         <div class="form-group">
                             <label for="station-district">District</label>
-                            <select id="station-district" required>
-                                <option value="">Select District</option>
-                                <option value="capital">Capital</option>
-                                <option value="north">North</option>
-                                <option value="south">South </option>
-                                <option value="east">East</option>
-                            </select>
+                            <input list="station-district" type="text" >
+                            <datalist name="location" id="station-district" required>
+                                {% for d in districts %}
+                                <option value="{{d.id}}">{{ d.district_name }}</option>
+                                {% endfor %}
+                            </datalist>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="station-url">Station URL</label>
-                        <input type="url" id="station-url" placeholder="https://example.com" required>
+                        <label for="station-group">Station group</label>
+                        <input list="station-groupp" type="text" id="station-group" required>
+                        <datalist id="station-groupp">
+                            {% for g in groups %}
+                            <option value="{{g.id}}">{{ g.group_name }}</option>
+                            {% endfor %}
+                        </datalist>
                     </div>
 
-                    <div class="form-group">
-                        <label for="station-description">Description</label>
-                        <textarea id="station-description" placeholder="Brief description of the station"></textarea>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="station-contact-name">Contact Name</label>
+                            <input  type="text" id="contact_name" placeholder="Enter contact name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contact_number">Contact Number</label>
+                            <input  type="text" id="contact_number" placeholder="Enter contact number" required>
+                        </div>
                     </div>
 
                     <div class="form-actions">
@@ -126,14 +144,24 @@
                             <h4 id="preview-name">New Station</h4>
                         </div>
                         <div class="preview-body">
+                            <p><strong>Station Name:</strong> <span id="preview-name">-</span></p>
                             <p><strong>Region:</strong> <span id="preview-region">-</span></p>
                             <p><strong>District:</strong> <span id="preview-district">-</span></p>
-                            <p><strong>URL:</strong> <span id="preview-url">-</span></p>
+                            <p><strong>Group:</strong> <span id="preview-group">-</span></p>
+                            <p><strong>Contact Name:</strong> <span id="preview-contact-name">-</span></p>
+                            <p><strong>Contact Number:</strong> <span id="preview-contact-number">-</span></p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+
+
+
+
+
+
 
         <div class="content-section" id="manage-section" style="display: none;">
             <h2><i class="fas fa-tasks"></i> Manage Stations</h2>
@@ -169,13 +197,22 @@
                             <th>ID</th>
                             <th>Station Name</th>
                             <th>Region</th>
-                            <th>District</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>Group id</th>
+                            <th>Contact Name</th>
+                            <th>Contact</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Data will be loaded here via JavaScript -->
+                        {% for s in stations %}
+                        <tr>
+                            <td>{{ s.station_id }} </td>
+                            <td>{{ s.station_name }}</td>
+                            <td>{{ s.location }}</td>
+                            <td>{{ s.group_id}}</td>
+                            <td>{{ s.contact_name}}</td>
+                            <td>{{ s.contact_number}}</td>
+                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
 
@@ -186,6 +223,13 @@
                 </div>
             </div>
         </div>
+
+
+
+
+
+
+
 
         <div class="content-section" id="view-section" style="display: none;">
             <h2><i class="fas fa-search"></i> View Station Details</h2>
@@ -249,6 +293,13 @@
             </div>
         </div>
 
+
+
+
+
+
+
+
         <div class="content-section" id="connect-section" style="display: none;">
             <h2><i class="fas fa-plug"></i> Connect to Station</h2>
             <div class="connect-container">
@@ -285,7 +336,8 @@
         </div>
     </div>
 
-    <script src="station.js"></script>
+
+    <script src="{{ url_for('static', filename='js/station.js')}}"></script>
 </body>
 
 </html>
