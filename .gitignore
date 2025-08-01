@@ -1,0 +1,13 @@
+# Ignore Python bytecode and cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Ignore virtual environments
+venv/
+.env/
+
+# Ignore logs and other common folders
+*.log
+*.sqlite3
+instance/
