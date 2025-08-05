@@ -13,43 +13,8 @@
 </head>
 
 <body>
-
-  <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <a href="{{ url_for('index') }}">
-                    <i class="fas fa-broadcast-tower"></i>
-                    <span>Station support & Management System</span>
-                </a>
-            </div>
-
-            <div class="nav-links" id="navLinks">
-                <a href="{{ url_for('index')}}" class="active"><i class="fas fa-home"></i> Home</a>
-
-                <div class="nav-search">
-                    <input type="text" placeholder="Search...">
-                    <button><i class="fas fa-search"></i></button>
-                </div>
-
-                <div class="role-selector">
-                    <button class="role-btn" id="roleBtn">
-                        <i class="fas fa-user-shield"></i> Access System <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="role-dropdown" id="roleDropdown">
-                        <a href="{{ url_for('dashboard') }}"><i class="fas fa-user-cog"></i> dashboard</a>
-                    </div>
-                </div>
-            </div>
-
-            <button class="hamburger" id="hamburger">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-    </nav>
-
-
-
-
+{% extends "base.html" %}
+{% block content %}
 
     <div class="container">
         <header>
@@ -338,6 +303,7 @@
 
 
     <script src="{{ url_for('static', filename='js/station.js')}}"></script>
+{% endblock %}
 </body>
 
 </html>

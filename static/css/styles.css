@@ -28,7 +28,7 @@ body {
 
 /* Navigation */
 .navbar {
-    background-color: white;
+    background-color: #067bf0;
     box-shadow: var(--box-shadow);
     position: sticky;
     top: 0;

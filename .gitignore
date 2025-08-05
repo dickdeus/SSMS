@@ -4,7 +4,7 @@ __pycache__/
 *.pyo
 
 # Ignore virtual environments
-venv/
+senv/
 .env/
 
 # Ignore logs and other common folders

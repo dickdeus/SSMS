@@ -1,7 +1,5 @@
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,238 +8,247 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      .dashboard-stickers {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 10px;
+        margin-bottom: 32px;
+      }
+      .dashboard-stickers .card {
+        border-radius: 16px;
+        padding: 24px 18px 18px 18px;
+        text-align: center;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.2s, box-shadow 0.2s;
+        font-family: 'Poppins', sans-serif;
+      }
+      .dashboard-stickers .card:hover {
+        transform: translateY(-6px) scale(1.03);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+      }
+      .dashboard-stickers .card.card-stations {
+        background: linear-gradient(135deg, #36d1c4 0%, #1fa2ff 100%);
+      }
+      .dashboard-stickers .card.card-users {
+        background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+        color: #333;
+      }
+      .dashboard-stickers .card.card-region {
+        background: linear-gradient(135deg, #f953c6 0%, #b91d73 100%);
+      }
+      .dashboard-stickers .card.card-district {
+        background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%);
+      }
+      .card .card-icon {
+        font-size: 38px;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 56px;
+        width: 56px;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.18);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      }
+      .dashboard-stickers .card.card-users .card-icon {
+        background: rgba(255,255,255,0.25);
+      }
+      .dashboard-stickers .card h3 {
+        margin: 10px 0 6px;
+        font-size: 17px;
+        font-weight: 500;
+        color: inherit;
+      }
+      .dashboard-stickers .card p {
+        margin: 0;
+        font-size: 26px;
+        font-weight: bold;
+        color: inherit;
+        letter-spacing: 1px;
+      }
+    </style>
 </head>
-
 <body>
-
-
-  <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <a href="{{ url_for('index') }}">
-                    <i class="fas fa-broadcast-tower"></i>
-                    <span>Station support & Management System</span>
-                </a>
-            </div>
-
-            <div class="nav-links" id="navLinks">
-                <a href="{{ url_for('index')}}" class="active"><i class="fas fa-home"></i> Home</a>
-                
-
-                <div class="nav-search">
-                    <input type="text" placeholder="Search...">
-                    <button><i class="fas fa-search"></i></button>
-                </div>
-
-                <div class="role-selector">
-                    <button class="role-btn" id="roleBtn">
-                        <i class="fas fa-user-shield"></i> Access System <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="role-dropdown" id="roleDropdown">
-                        <a href="{{ url_for('dashboard') }}"><i class="fas fa-user-cog"></i> dashboard</a>
-                    </div>
-                </div>
-            </div>
-
-            <button class="hamburger" id="hamburger">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-    </nav>
-
-
-    <div class="container">
-        <header>
-            <h1>Stations Support and Management System</h1>
-            <div class="user-info">
-                <i class="fas fa-user-circle"></i>
-                <span>Administrator</span>
-            </div>
-        </header>
-
-        <div class="dashboard-stickers">
-            <a class="sticker" id="stations-sticker" href="{{ url_for('view_stations') }}" style="text-decoration: none;">
-                <div class="sticker-icon">
-                    <i class="fas fa-broadcast-tower"></i>
-                </div>
-                <div class="sticker-info">
-                    <h3>Number of Stations</h3>
-                    <p class="counter" data-target="247">{{ station_count }}</p>
-                </div>
-            </a>
-
-            <a class="sticker" id="users-sticker" href="{{ url_for('manage_users') }}" style="text-decoration: none;">
-                <div class="sticker-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="sticker-info">
-                    <h3>Number of Users</h3>
-                    <p class="counter" data-target="84">{{ user_count }}</p>
-                </div>
-            </a>
-
-            <div class="sticker" id="region-sticker">
-                <div class="sticker-icon">
-                    <i class="fas fa-map-marked-alt"></i>
-                </div>
-                <div class="sticker-info">
-                    <h3>Region with Highest Stations</h3>
-                    <p>{{ top_region }}</p>
-                    <span class="highlight">{{ top_region }}</span>
-                </div>
-            </div>
-
-            <div class="sticker" id="district-sticker">
-                <div class="sticker-icon">
-                    <i class="fas fa-map-pin"></i>
-                </div>
-                <div class="sticker-info">
-                    <h3>District with Highest Stations</h3>
-                    <p>{{ top_district}}</p>
-                    <span class="highlight"></span>
-                </div>
-            </div>
-        </div>
-
-        <div class="table-container">
-            <h2>Top 10 Regions by Station Count</h2>
-            <table id="regions-table">
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>Region</th>
-                        <th>Number of Stations</th>
-                        <th>Percentage</th>
-                        <th>Trend</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Central Region</td>
-                        <td>58</td>
-                        <td>
-                            <div class="progress-container">
-                                <div class="progress-bar" style="width: 23.5%"></div>
-                                <span>23.5%</span>
-                            </div>
-                        </td>
-                        <td><i class="fas fa-arrow-up trend-up"></i> 5.2%</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Northern Region</td>
-                        <td>47</td>
-                        <td>
-                            <div class="progress-container">
-                                <div class="progress-bar" style="width: 19%"></div>
-                                <span>19%</span>
-                            </div>
-                        </td>
-                        <td><i class="fas fa-arrow-up trend-up"></i> 2.1%</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Eastern Region</td>
-                        <td>42</td>
-                        <td>
-                            <div class="progress-container">
-                                <div class="progress-bar" style="width: 17%"></div>
-                                <span>17%</span>
-                            </div>
-                        </td>
-                        <td><i class="fas fa-arrow-down trend-down"></i> 1.3%</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>Western Region</td>
-                        <td>38</td>
-                        <td>
-                            <div class="progress-container">
-                                <div class="progress-bar" style="width: 15.4%"></div>
-                                <span>15.4%</span>
-                            </div>
-                        </td>
-                        <td><i class="fas fa-arrow-up trend-up"></i> 3.7%</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>Southern Region</td>
-                        <td>32</td>
-                        <td>
-                            <div class="progress-container">
-                                <div class="progress-bar" style="width: 13%"></div>
-                                <span>13%</span>
-                            </div>
-                        </td>
-                        <td><i class="fas fa-arrow-up trend-up"></i> 0.8%</td>
-                    </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>Coastal Region</td>
-                        <td>18</td>
-                        <td>
-                            <div class="progress-container">
-                                <div class="progress-bar" style="width: 7.3%"></div>
-                                <span>7.3%</span>
-                            </div>
-                        </td>
-                        <td><i class="fas fa-arrow-down trend-down"></i> 2.4%</td>
-                    </tr>
-                    <tr>
-                        <td>7</td>
-                        <td>Highland Region</td>
-                        <td>7</td>
-                        <td>
-                            <div class="progress-container">
-                                <div class="progress-bar" style="width: 2.8%"></div>
-                                <span>2.8%</span>
-                            </div>
-                        </td>
-                        <td><i class="fas fa-arrow-up trend-up"></i> 1.1%</td>
-                    </tr>
-                    <tr>
-                        <td>8</td>
-                        <td>Island Region</td>
-                        <td>3</td>
-                        <td>
-                            <div class="progress-container">
-                                <div class="progress-bar" style="width: 1.2%"></div>
-                                <span>1.2%</span>
-                            </div>
-                        </td>
-                        <td><i class="fas fa-equals trend-neutral"></i> 0%</td>
-                    </tr>
-                    <tr>
-                        <td>9</td>
-                        <td>Frontier Region</td>
-                        <td>1</td>
-                        <td>
-                            <div class="progress-container">
-                                <div class="progress-bar" style="width: 0.4%"></div>
-                                <span>0.4%</span>
-                            </div>
-                        </td>
-                        <td><i class="fas fa-equals trend-neutral"></i> 0%</td>
-                    </tr>
-                    <tr>
-                        <td>10</td>
-                        <td>Special Zone</td>
-                        <td>1</td>
-                        <td>
-                            <div class="progress-container">
-                                <div class="progress-bar" style="width: 0.4%"></div>
-                                <span>0.4%</span>
-                            </div>
-                        </td>
-                        <td><i class="fas fa-equals trend-neutral"></i> 0%</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+  {% extends "base.html" %}
+  {% block content %}
+  <div class="dashboard-stickers">
+    <div class="card card-stations">
+      <div class="card-icon">
+        <i class="fas fa-broadcast-tower"></i>
+      </div>
+      <h3>Number of Stations</h3>
+      <p>{{ station_count }}</p>
     </div>
 
-    <script src="dashboard.js"></script>
-</body>
+    <div class="card card-users">
+      <div class="card-icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <h3>Number of Users</h3>
+      <p>{{ user_count }}</p>
+    </div>
 
+    <div class="card card-region">
+      <div class="card-icon">
+        <i class="fas fa-map-marked-alt"></i>
+      </div>
+      <h3>Region with Highest Stations</h3>
+      <p>{{ top_region }}</p>
+    </div>
+
+    <div class="card card-district">
+      <div class="card-icon">
+        <i class="fas fa-map-pin"></i>
+      </div>
+      <h3>District with Highest Stations</h3>
+      <p>{{ top_district }}</p>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <h2>Top 10 Regions by Station Count</h2>
+    <table id="regions-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Region</th>
+          <th>Number of Stations</th>
+          <th>Percentage</th>
+          <th>Trend</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Central Region</td>
+          <td>58</td>
+          <td>
+            <div class="progress-container">
+              <div class="progress-bar" style="width: 23.5%"></div>
+              <span>23.5%</span>
+            </div>
+          </td>
+          <td><i class="fas fa-arrow-up trend-up"></i> 5.2%</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Northern Region</td>
+          <td>47</td>
+          <td>
+            <div class="progress-container">
+              <div class="progress-bar" style="width: 19%"></div>
+              <span>19%</span>
+            </div>
+          </td>
+          <td><i class="fas fa-arrow-up trend-up"></i> 2.1%</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Eastern Region</td>
+          <td>42</td>
+          <td>
+            <div class="progress-container">
+              <div class="progress-bar" style="width: 17%"></div>
+              <span>17%</span>
+            </div>
+          </td>
+          <td><i class="fas fa-arrow-down trend-down"></i> 1.3%</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Western Region</td>
+          <td>38</td>
+          <td>
+            <div class="progress-container">
+              <div class="progress-bar" style="width: 15.4%"></div>
+              <span>15.4%</span>
+            </div>
+          </td>
+          <td><i class="fas fa-arrow-up trend-up"></i> 3.7%</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Southern Region</td>
+          <td>32</td>
+          <td>
+            <div class="progress-container">
+              <div class="progress-bar" style="width: 13%"></div>
+              <span>13%</span>
+            </div>
+          </td>
+          <td><i class="fas fa-arrow-up trend-up"></i> 0.8%</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Coastal Region</td>
+          <td>18</td>
+          <td>
+            <div class="progress-container">
+              <div class="progress-bar" style="width: 7.3%"></div>
+              <span>7.3%</span>
+            </div>
+          </td>
+          <td><i class="fas fa-arrow-down trend-down"></i> 2.4%</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Highland Region</td>
+          <td>7</td>
+          <td>
+            <div class="progress-container">
+              <div class="progress-bar" style="width: 2.8%"></div>
+              <span>2.8%</span>
+            </div>
+          </td>
+          <td><i class="fas fa-arrow-up trend-up"></i> 1.1%</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td>Island Region</td>
+          <td>3</td>
+          <td>
+            <div class="progress-container">
+              <div class="progress-bar" style="width: 1.2%"></div>
+              <span>1.2%</span>
+            </div>
+          </td>
+          <td><i class="fas fa-equals trend-neutral"></i> 0%</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>Frontier Region</td>
+          <td>1</td>
+          <td>
+            <div class="progress-container">
+              <div class="progress-bar" style="width: 0.4%"></div>
+              <span>0.4%</span>
+            </div>
+          </td>
+          <td><i class="fas fa-equals trend-neutral"></i> 0%</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td>Special Zone</td>
+          <td>1</td>
+          <td>
+            <div class="progress-container">
+              <div class="progress-bar" style="width: 0.4%"></div>
+              <span>0.4%</span>
+            </div>
+          </td>
+          <td><i class="fas fa-equals trend-neutral"></i> 0%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  {% endblock %}
+  <script src="dashboard.js"></script>
+</body>
 </html>
