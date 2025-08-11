@@ -1,57 +1,205 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Data Setup</h2>
-<form method="POST" class="row g-3">
-  <div class="col-md-4">
-    <label>Type</label>
-    <select name="type" class="form-control">
-      <option value="region">Region</option>
-      <option value="district">District</option>
-      <option value="group">Group</option>
-    </select>
-  </div>
-  <div class="col-md-4">
-    <label>Name</label>
-    <input type="text" name="name" class="form-control">
-  </div>
-  <div class="col-md-4" id="region-select">
-    <label>Region (for Districts only)</label>
-    <select name="region_id" class="form-control">
-      {% for r in regions %}
-        <option value="{{ r.id }}">{{ r.region_name }}</option>
-      {% endfor %}
-    </select>
-  </div>
-  <div class="col-12">
-    <button class="btn btn-primary">Add</button>
-  </div>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Setup | SSMS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/datasetup.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
 
-<hr>
-<div class="row">
-  <div class="col-md-4">
-    <h5>Regions</h5>
-    <ul class="list-group">
-      {% for r in regions %}
-        <li class="list-group-item">{{ r.region_name }}</li>
-      {% endfor %}
-    </ul>
-  </div>
-  <div class="col-md-4">
-    <h5>Districts</h5>
-    <ul class="list-group">
-      {% for d in districts %}
-        <li class="list-group-item">{{ d.district_name }}</li>
-      {% endfor %}
-    </ul>
-  </div>
-  <div class="col-md-4">
-    <h5>Groups</h5>
-    <ul class="list-group">
-      {% for g in groups %}
-        <li class="list-group-item">{{ g.group_name }}</li>
-      {% endfor %}
-    </ul>
-  </div>
-</div>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-database"></i> Data Setup</h1>
+        </header>
+
+        <nav class="data-nav">
+            <ul>
+                <li class="active" data-section="regions"><a href="#regions"><i class="fas fa-map-marked-alt"></i>Regions</a></li>
+                <li data-section="districts"><a href="#districts"><i class="fas fa-map-pin"></i> Districts</a></li>
+                <li data-section="groups"><a href="#groups"><i class="fas fa-users"></i> Groups</a></li>
+            </ul>
+        </nav>
+
+        <div class="content-section" id="regions-section">
+            <div class="section-header">
+                <h2><i class="fas fa-map-marked-alt"></i> Manage Regions</h2>
+                <button class="btn-primary" id="add-region-btn"><i class="fas fa-plus"></i> Add Region</button>
+            </div>
+
+            <div class="data-management">
+                <div class="data-form" id="region-form-container" style="display: none;">
+                    <h3><span id="region-form-title">Add New</span> Region</h3>
+                    <form id="region-form">
+                        <input type="hidden" id="region-id">
+                        <div class="form-group">
+                            <label for="region-name">Region Name</label>
+                            <input type="text" id="region-name" placeholder="Enter region name" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Save Region</button>
+                            <button type="button" class="btn-secondary" id="cancel-region">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="data-table-container">
+                    <div class="table-controls">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search regions..." id="region-search">
+                        </div>
+                        <div class="table-actions">
+                            <button class="btn-secondary"><i class="fas fa-filter"></i> Filter</button>
+                            <button class="btn-secondary"><i class="fas fa-download"></i> Export</button>
+                        </div>
+                    </div>
+
+                    <table id="regions-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Region Name</th>
+                                <th>Stations</th>
+                                <th>Last Updated</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be loaded here via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section" id="districts-section" style="display: none;">
+            <div class="section-header">
+                <h2><i class="fas fa-map-pin"></i> Manage Districts</h2>
+                <button class="btn-primary" id="add-district-btn"><i class="fas fa-plus"></i> Add District</button>
+            </div>
+
+            <div class="data-management">
+                <div class="data-form" id="district-form-container" style="display: none;">
+                    <h3><span id="district-form-title">Add New</span> District</h3>
+                    <form id="district-form">
+                        <input type="hidden" id="district-id">
+                        <div class="form-group">
+                            <label for="district-name">District Name</label>
+                            <input type="text" id="district-name" placeholder="Enter district name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="district-region">Region</label>
+                            <select id="district-region" required>
+                                <option value="">Select Region</option>
+                                <!-- Region options will be loaded dynamically via JS -->
+                            </select>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Save District</button>
+                            <button type="button" class="btn-secondary" id="cancel-district">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="data-table-container">
+                    <div class="table-controls">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search districts..." id="district-search">
+                        </div>
+                        <div class="table-actions">
+                            <select id="district-region-filter">
+                                <option value="">All Regions</option>
+                                <!-- Region filter options will be loaded dynamically via JS -->
+                            </select>
+                            <button class="btn-secondary"><i class="fas fa-download"></i> Export</button>
+                        </div>
+                    </div>
+
+                    <table id="districts-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>District Name</th>
+                                <th>Region</th>
+                                <th>Stations</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be loaded here via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section" id="groups-section" style="display: none;">
+            <div class="section-header">
+                <h2><i class="fas fa-users"></i> Manage Groups</h2>
+                <button class="btn-primary" id="add-group-btn"><i class="fas fa-plus"></i> Add Group</button>
+            </div>
+
+            <div class="data-management">
+                <div class="data-form" id="group-form-container" style="display: none;">
+                    <h3><span id="group-form-title">Add New</span> Group</h3>
+                    <form id="group-form">
+                        <input type="hidden" id="group-id">
+                        <div class="form-group">
+                            <label for="group-name">Group Name</label>
+                            <input type="text" id="group-name" placeholder="Enter group name" required>
+                        </div>
+                        <!-- <div class="form-group">
+                            <label for="group-members">Members</label>
+                            <select id="group-members" multiple>
+                                 Group member options will be loaded dynamically via JS 
+                            </select>
+                        </div> -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Save Group</button>
+                            <button type="button" class="btn-secondary" id="cancel-group">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="data-table-container">
+                    <div class="table-controls">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search groups..." id="group-search">
+                        </div>
+                        <div class="table-actions">
+                            <button class="btn-secondary"><i class="fas fa-filter"></i> Filter</button>
+                            <button class="btn-secondary"><i class="fas fa-download"></i> Export</button>
+                        </div>
+                    </div>
+
+                    <table id="groups-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Group Name</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be loaded here via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/datasetup.js')}}"></script>
+</body>
+
+</html>
 {% endblock %}
