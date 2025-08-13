@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function () {
     // --- Manage Stations: Dynamic Region Filter, Search, Pagination ---
     const regionFilter = document.getElementById('filter-region');
@@ -11,6 +12,69 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentRegion = '';
     let currentSearch = '';
     let currentItemsPerPage = parseInt(itemsPerPage.value);
+
+
+
+    const exportBtn = document.querySelector('.table-actions .btn-secondary i.fas.fa-download')?.parentElement;
+    if (exportBtn) {
+        exportBtn.addEventListener('click', function () {
+            exportStationsToPrint();
+        });
+    }
+
+    function exportStationsToPrint() {
+
+        let win = window.open('', '', 'width=900,height=700');
+        let html = `
+                    <html>
+                    <head>
+                        <title>Stations List</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 40px; }
+                            h2 { text-align: center; }
+                            table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+                            th, td { border: 1px solid #888; padding: 8px; text-align: left; }
+                            th { background: #f2f2f2; }
+                        </style>
+                    </head>
+                    <body>
+                        <h2>Stations List</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Code</th>
+                                    <th>Name</th>
+                                    <th>Group</th>
+                                    <th>District</th>
+                                    <th>Contact Name</th>
+                                    <th>Contact Number</th>
+                                    <th>IP Address</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${stations.map(station => `
+                                    <tr>
+                                        <td>${station.id}</td>
+                                        <td>${station.station_code || ''}</td>
+                                        <td>${station.station_name || ''}</td>
+                                        <td>${station.group_name || ''}</td>
+                                        <td>${station.district_name || ''}</td>
+                                        <td>${station.contact_name || ''}</td>
+                                        <td>${station.contact_number || ''}</td>
+                                        <td>${station.connect_IP_Address || ''}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </body>
+                    </html>
+                `;
+        win.document.write(html);
+        win.document.close();
+        win.focus();
+        win.print();
+    }
 
     // Fetch regions for filter
     function loadRegions() {
@@ -49,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Region filter
     if (regionFilter) {
-        regionFilter.addEventListener('change', function() {
+        regionFilter.addEventListener('change', function () {
             currentRegion = this.value || '';
             currentPage = 1;
             loadStations(currentPage);
@@ -58,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Search
     if (searchInput) {
-        searchInput.addEventListener('input', function() {
+        searchInput.addEventListener('input', function () {
             currentSearch = this.value;
             currentPage = 1;
             loadStations(currentPage);
@@ -97,14 +161,14 @@ document.addEventListener('DOMContentLoaded', function () {
     var districtSelect = document.getElementById('location');
     if (regionSelect && districtSelect) {
         var allDistrictOptions = Array.from(districtSelect.options);
-        regionSelect.addEventListener('change', function() {
+        regionSelect.addEventListener('change', function () {
             var selectedRegion = regionSelect.value;
             districtSelect.innerHTML = '';
             var defaultOption = document.createElement('option');
             defaultOption.value = '';
             defaultOption.textContent = 'Select District';
             districtSelect.appendChild(defaultOption);
-            allDistrictOptions.forEach(function(opt) {
+            allDistrictOptions.forEach(function (opt) {
                 if (!opt.value) return; // skip default
                 if (opt.getAttribute('data-region') === selectedRegion) {
                     districtSelect.appendChild(opt.cloneNode(true));
@@ -137,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             setTimeout(() => {
                                 const connectBtn = document.querySelector('.detail-actions .btn-connect');
                                 if (connectBtn) {
-                                    connectBtn.onclick = function() {
+                                    connectBtn.onclick = function () {
                                         activateConnectSection(first.id);
                                     };
                                 }
@@ -217,23 +281,23 @@ document.addEventListener('DOMContentLoaded', function () {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 })
-                .then(res => {
-                    if (!res.ok) throw new Error('Create failed');
-                    return res.json();
-                })
-                .then(() => {
-                    alert('Station registered successfully!');
-                    stationForm.reset();
-                    previewElements.forEach(id => {
-                        const el = document.getElementById(id);
-                        if (el) el.textContent = '-';
+                    .then(res => {
+                        if (!res.ok) throw new Error('Create failed');
+                        return res.json();
+                    })
+                    .then(() => {
+                        alert('Station registered successfully!');
+                        stationForm.reset();
+                        previewElements.forEach(id => {
+                            const el = document.getElementById(id);
+                            if (el) el.textContent = '-';
+                        });
+                        loadStations(currentPage);
+                    })
+                    .catch(err => {
+                        console.error('Error registering station', err);
+                        alert('Error registering station.');
                     });
-                    loadStations(currentPage);
-                })
-                .catch(err => {
-                    console.error('Error registering station', err);
-                    alert('Error registering station.');
-                });
             } else {
                 alert('Please fill in all required fields');
             }
@@ -273,7 +337,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Event delegation for actions (robust & minimal)
     if (stationsTable) {
-        stationsTable.addEventListener('click', function(e) {
+        stationsTable.addEventListener('click', function (e) {
             const viewBtn = e.target.closest('.view-station');
             if (viewBtn) {
                 e.preventDefault();
@@ -297,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     fetch(`/api/stations/${id}`, { method: 'DELETE' })
                         .then(res => {
                             if (!res.ok) throw new Error('Delete failed');
-                            return res.json().catch(()=>{});
+                            return res.json().catch(() => { });
                         })
                         .then(() => {
                             alert('Station deleted!');
@@ -313,7 +377,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-        // --- View Station Details ---
+    // --- View Station Details ---
     function showStationDetails(id) {
         console.log("View button clicked for id=", id);
         console.log("Fetching station details for", id);
@@ -372,12 +436,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 // Edit button
-                document.querySelector('.detail-actions .btn-primary').onclick = function() {
+                document.querySelector('.detail-actions .btn-primary').onclick = function () {
                     window.location.href = `/stations/edit/${id}`;
                 };
 
                 // Connect button
-                document.querySelector('.detail-actions .btn-connect').onclick = function() {
+                document.querySelector('.detail-actions .btn-connect').onclick = function () {
                     navItems.forEach(li => li.classList.remove('active'));
                     document.querySelector('[data-section="connect"]').classList.add('active');
                     contentSections.forEach(s => s.style.display = 'none');
@@ -402,12 +466,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     const manageNav = document.querySelector('[data-section="manage"]');
     if (manageNav) {
-        manageNav.addEventListener('click', function() {
+        manageNav.addEventListener('click', function () {
             loadStations(currentPage);
         });
     }
 
-    // Connection simulation (attach only if connect button exists)
+    // Connection simulation 
     const connectBtn = document.getElementById('connect-btn');
     const statusIndicator = document.querySelector('.indicator-circle');
     const connectionStatus = document.querySelector('.connection-status strong');

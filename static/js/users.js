@@ -29,6 +29,63 @@ document.addEventListener('DOMContentLoaded', function () {
     fetchInitialData();
     setupEventListeners();
 
+    // Export to printable document
+    const exportBtn = document.querySelector('.table-actions .btn-secondary i.fas.fa-download')?.parentElement;
+    if (exportBtn) {
+        exportBtn.addEventListener('click', function () {
+            exportUsersToPrint();
+        });
+    }
+
+    function exportUsersToPrint() {
+        let win = window.open('', '', 'width=900,height=700');
+        let html = `
+            <html>
+            <head>
+                <title>Users List</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 40px; }
+                    h2 { text-align: center; }
+                    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+                    th, td { border: 1px solid #888; padding: 8px; text-align: left; }
+                    th { background: #f2f2f2; }
+                </style>
+            </head>
+            <body>
+                <h2>Users List</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>District</th>
+                            <th>Role</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filteredUsers.map(user => `
+                            <tr>
+                                <td>USR-${user.id.toString().padStart(3, '0')}</td>
+                                <td>${user.first_name} ${user.last_name}</td>
+                                <td>${user.phone_number || ''}</td>
+                                <td>${user.district_name || ''}</td>
+                                <td>${user.role_name || ''}</td>
+                                <td>${user.created_time || ''}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </body>
+            </html>
+        `;
+        win.document.write(html);
+        win.document.close();
+        win.focus();
+        win.print();
+    }
+
     function fetchInitialData() {
         Promise.all([
             fetch('/api/users').then(res => res.json()),
@@ -49,9 +106,16 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function populateFormOptions() {
-        // Populate role select
+        // Populate role select (form)
         userRoleSelect.innerHTML = '<option value="">Select Role</option>' +
             roles.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+
+        // Populate role filter (table filter)
+        if (userRoleFilter) {
+            userRoleFilter.innerHTML = '<option value="">All Roles</option>' +
+                roles.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+        }
+
         // Populate district select
         const districtSelect = document.getElementById('user-district');
         if (districtSelect) {
@@ -109,6 +173,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 deleteUser(userId);
             });
         });
+    }
+
+    function applyFilters() {
+        const searchTerm = userSearch.value.toLowerCase();
+        const roleFilter = userRoleFilter.value;
+        filteredUsers = users.filter(user => {
+            const matchesSearch =
+                user.first_name.toLowerCase().includes(searchTerm) ||
+                user.last_name.toLowerCase().includes(searchTerm) ||
+                user.phone_number.toLowerCase().includes(searchTerm);
+            const matchesRole = !roleFilter || user.role_id == roleFilter;
+            return matchesSearch && matchesRole;
+        });
+        currentPage = 1;
+        loadUsers();
     }
 
     function setupEventListeners() {
@@ -178,20 +257,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function applyFilters() {
-        const searchTerm = userSearch.value.toLowerCase();
-        const roleFilter = userRoleFilter.value;
-        filteredUsers = users.filter(user => {
-            const matchesSearch =
-                user.first_name.toLowerCase().includes(searchTerm) ||
-                user.last_name.toLowerCase().includes(searchTerm) ||
-                user.phone_number.toLowerCase().includes(searchTerm);
-            const matchesRole = !roleFilter || user.role_id == roleFilter;
-            return matchesSearch && matchesRole;
-        });
-        currentPage = 1;
-        loadUsers();
-    }
+    
 
     function editUser(id) {
         const user = users.find(u => u.id === id);

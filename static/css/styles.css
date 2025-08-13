@@ -48,7 +48,7 @@ body {
     display: flex;
     align-items: center;
     text-decoration: none;
-    color: var(--primary-color);
+    color: var(--light-color);
     font-weight: 600;
     font-size: 20px;
     gap: 10px;
@@ -66,7 +66,7 @@ body {
 
 .nav-links a {
     text-decoration: none;
-    color: var(--dark-color);
+    color: var(--light-color);
     font-weight: 500;
     display: flex;
     align-items: center;

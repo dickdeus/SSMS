@@ -45,11 +45,60 @@ document.addEventListener("DOMContentLoaded", () => {
     // =============================
     // REGIONS CRUD
     // =============================
+    // Export regions
+    const regionExportBtn = document.querySelector('#regions-table').closest('.data-table-container').querySelector('.btn-secondary .fa-download')?.parentElement;
+    if (regionExportBtn) {
+        regionExportBtn.addEventListener('click', function () {
+            let win = window.open('', '', 'width=900,height=700');
+            let html = `
+                <html>
+                <head>
+                    <title>Regions List</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 40px; }
+                        h2 { text-align: center; }
+                        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+                        th, td { border: 1px solid #888; padding: 8px; text-align: left; }
+                        th { background: #f2f2f2; }
+                    </style>
+                </head>
+                <body>
+                    <h2>Regions List</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Region Name</th>
+                                <th>Stations</th>
+                                <th>Last Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${allRegions.map(r => `
+                                <tr>
+                                    <td>${r.id}</td>
+                                    <td>${r.region_name}</td>
+                                    <td>${r.stations || '-'}</td>
+                                    <td>${r.last_updated || '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `;
+            win.document.write(html);
+            win.document.close();
+            win.focus();
+            win.print();
+        });
+    }
     const regionTableBody = document.querySelector("#regions-table tbody");
     const regionFormContainer = document.querySelector("#region-form-container");
     const regionForm = document.querySelector("#region-form");
     const regionNameInput = document.querySelector("#region-name");
     const regionIdInput = document.querySelector("#region-id");
+    const regionSearchInput = document.getElementById("region-search");
 
     document.querySelector("#add-region-btn").addEventListener("click", () => {
         regionIdInput.value = "";
@@ -61,30 +110,44 @@ document.addEventListener("DOMContentLoaded", () => {
         regionFormContainer.style.display = "none";
     });
 
+    let allRegions = [];
+    function renderRegionsTable(data) {
+        regionTableBody.innerHTML = "";
+        data.forEach(r => {
+            regionTableBody.innerHTML += `
+                <tr>
+                    <td>${r.id}</td>
+                    <td>${r.region_name}</td>
+                    <td>${r.stations || '-'}</td>
+                    <td>${r.last_updated || '-'}</td>
+                    <td>
+                        <button class="action-btn edit" data-id="${r.id}"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn delete" data-id="${r.id}"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
     function loadRegions() {
         fetchJSON("/api/regions").then(data => {
-            regionTableBody.innerHTML = "";
+            allRegions = data;
             const regionSelect = document.querySelector("#district-region");
             const regionFilter = document.querySelector("#district-region-filter");
             regionSelect.innerHTML = `<option value="">Select Region</option>`;
             regionFilter.innerHTML = `<option value="">All Regions</option>`;
-
             data.forEach(r => {
-                regionTableBody.innerHTML += `
-                    <tr>
-                        <td>${r.id}</td>
-                        <td>${r.region_name}</td>
-                        <td>${r.stations || '-'}</td>
-                        <td>${r.last_updated || '-'}</td>
-                        <td>
-                            <button class="action-btn edit" data-id="${r.id}"><i class="fas fa-edit"></i></button>
-                            <button class="action-btn delete" data-id="${r.id}"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
                 regionSelect.innerHTML += `<option value="${r.id}">${r.region_name}</option>`;
                 regionFilter.innerHTML += `<option value="${r.id}">${r.region_name}</option>`;
             });
+            renderRegionsTable(data);
+        });
+    }
+    if (regionSearchInput) {
+        regionSearchInput.addEventListener('input', function() {
+            const term = this.value.trim().toLowerCase();
+            renderRegionsTable(allRegions.filter(r =>
+                r.region_name.toLowerCase().includes(term)
+            ));
         });
     }
 
@@ -122,12 +185,61 @@ document.addEventListener("DOMContentLoaded", () => {
     // =============================
     // DISTRICTS CRUD
     // =============================
+    // Export districts
+    const districtExportBtn = document.querySelector('#districts-table').closest('.data-table-container').querySelector('.btn-secondary .fa-download')?.parentElement;
+    if (districtExportBtn) {
+        districtExportBtn.addEventListener('click', function () {
+            let win = window.open('', '', 'width=900,height=700');
+            let html = `
+                <html>
+                <head>
+                    <title>Districts List</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 40px; }
+                        h2 { text-align: center; }
+                        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+                        th, td { border: 1px solid #888; padding: 8px; text-align: left; }
+                        th { background: #f2f2f2; }
+                    </style>
+                </head>
+                <body>
+                    <h2>Districts List</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>District Name</th>
+                                <th>Region</th>
+                                <th>Last Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${allDistricts.map(d => `
+                                <tr>
+                                    <td>${d.id}</td>
+                                    <td>${d.district_name}</td>
+                                    <td>${d.region_name}</td>
+                                    <td>${d.last_updated || '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `;
+            win.document.write(html);
+            win.document.close();
+            win.focus();
+            win.print();
+        });
+    }
     const districtTableBody = document.querySelector("#districts-table tbody");
     const districtFormContainer = document.querySelector("#district-form-container");
     const districtForm = document.querySelector("#district-form");
     const districtNameInput = document.querySelector("#district-name");
     const districtIdInput = document.querySelector("#district-id");
     const districtRegionSelect = document.querySelector("#district-region");
+    const districtSearchInput = document.getElementById("district-search");
 
     document.querySelector("#add-district-btn").addEventListener("click", () => {
         districtIdInput.value = "";
@@ -140,23 +252,37 @@ document.addEventListener("DOMContentLoaded", () => {
         districtFormContainer.style.display = "none";
     });
 
+    let allDistricts = [];
+    function renderDistrictsTable(data) {
+        districtTableBody.innerHTML = "";
+        data.forEach(d => {
+            districtTableBody.innerHTML += `
+                <tr>
+                    <td>${d.id}</td>
+                    <td>${d.district_name}</td>
+                    <td>${d.region_name}</td>
+                    <td>${d.last_updated || '-'}</td>
+                    <td>
+                        <button class="action-btn edit" data-id="${d.id}"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn delete" data-id="${d.id}"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
     function loadDistricts() {
         fetchJSON("/api/districts").then(data => {
-            districtTableBody.innerHTML = "";
-            data.forEach(d => {
-                districtTableBody.innerHTML += `
-                    <tr>
-                        <td>${d.id}</td>
-                        <td>${d.district_name}</td>
-                        <td>${d.region_name}</td>
-                        <td>${d.last_updated || '-'}</td>
-                        <td>
-                            <button class="action-btn edit" data-id="${d.id}"><i class="fas fa-edit"></i></button>
-                            <button class="action-btn delete" data-id="${d.id}"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            });
+            allDistricts = data;
+            renderDistrictsTable(data);
+        });
+    }
+    if (districtSearchInput) {
+        districtSearchInput.addEventListener('input', function() {
+            const term = this.value.trim().toLowerCase();
+            renderDistrictsTable(allDistricts.filter(d =>
+                d.district_name.toLowerCase().includes(term) ||
+                d.region_name.toLowerCase().includes(term)
+            ));
         });
     }
 
@@ -195,11 +321,58 @@ document.addEventListener("DOMContentLoaded", () => {
     // =============================
     // GROUPS CRUD
     // =============================
+    // Export groups
+    const groupExportBtn = document.querySelector('#groups-table').closest('.data-table-container').querySelector('.btn-secondary .fa-download')?.parentElement;
+    if (groupExportBtn) {
+        groupExportBtn.addEventListener('click', function () {
+            let win = window.open('', '', 'width=900,height=700');
+            let html = `
+                <html>
+                <head>
+                    <title>Groups List</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 40px; }
+                        h2 { text-align: center; }
+                        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+                        th, td { border: 1px solid #888; padding: 8px; text-align: left; }
+                        th { background: #f2f2f2; }
+                    </style>
+                </head>
+                <body>
+                    <h2>Groups List</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Group Name</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${allGroups.map(g => `
+                                <tr>
+                                    <td>${g.id}</td>
+                                    <td>${g.group_name}</td>
+                                    <td>${g.last_updated || '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `;
+            win.document.write(html);
+            win.document.close();
+            win.focus();
+            win.print();
+        });
+    }
     const groupTableBody = document.querySelector("#groups-table tbody");
     const groupFormContainer = document.querySelector("#group-form-container");
     const groupForm = document.querySelector("#group-form");
     const groupNameInput = document.querySelector("#group-name");
     const groupIdInput = document.querySelector("#group-id");
+    const groupSearchInput = document.getElementById("group-search");
 
     document.querySelector("#add-group-btn").addEventListener("click", () => {
         groupIdInput.value = "";
@@ -211,22 +384,35 @@ document.addEventListener("DOMContentLoaded", () => {
         groupFormContainer.style.display = "none";
     });
 
+    let allGroups = [];
+    function renderGroupsTable(data) {
+        groupTableBody.innerHTML = "";
+        data.forEach(g => {
+            groupTableBody.innerHTML += `
+                <tr>
+                    <td>${g.id}</td>
+                    <td>${g.group_name}</td>
+                    <td>${g.last_updated || '-'}</td>
+                    <td>
+                        <button class="action-btn edit" data-id="${g.id}"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn delete" data-id="${g.id}"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
     function loadGroups() {
         fetchJSON("/api/groups").then(data => {
-            groupTableBody.innerHTML = "";
-            data.forEach(g => {
-                groupTableBody.innerHTML += `
-                    <tr>
-                        <td>${g.id}</td>
-                        <td>${g.group_name}</td>
-                        <td>${g.last_updated || '-'}</td>
-                        <td>
-                            <button class="action-btn edit" data-id="${g.id}"><i class="fas fa-edit"></i></button>
-                            <button class="action-btn delete" data-id="${g.id}"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            });
+            allGroups = data;
+            renderGroupsTable(data);
+        });
+    }
+    if (groupSearchInput) {
+        groupSearchInput.addEventListener('input', function() {
+            const term = this.value.trim().toLowerCase();
+            renderGroupsTable(allGroups.filter(g =>
+                g.group_name.toLowerCase().includes(term)
+            ));
         });
     }
 
