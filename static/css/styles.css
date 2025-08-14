@@ -28,7 +28,7 @@ body {
 
 /* Navigation */
 .navbar {
-    background-color: #067bf0;
+    background-color: rgb(39, 68, 255);
     box-shadow: var(--box-shadow);
     position: sticky;
     top: 0;
@@ -36,9 +36,9 @@ body {
 }
 
 .nav-container {
-    max-width: 1200px;
+    max-width: 1500px;
     margin: 0 auto;
-    padding: 15px 20px;
+    padding: 5px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -46,7 +46,9 @@ body {
 
 .logo a {
     display: flex;
+
     align-items: center;
+    justify-content: flex-start;
     text-decoration: none;
     color: var(--light-color);
     font-weight: 600;
@@ -61,127 +63,84 @@ body {
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 30px;
 }
 
 .nav-links a {
-    text-decoration: none;
-    color: var(--light-color);
-    font-weight: 500;
     display: flex;
+    flex-direction: column;
+    /* Stack icon above label */
     align-items: center;
     gap: 5px;
-    transition: var(--transition);
-    padding: 8px 12px;
-    border-radius: var(--border-radius);
+    padding: 8px 14px;
+    /* Same before/after hover */
+    border-radius: 8px;
+    background-color: transparent;
+    /* Default no background */
+    color: white;
+    /* Default text color */
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    /* Smooth hover effect */
 }
 
-.nav-links a:hover {
-    color: var(--primary-color);
-    background-color: rgba(67, 97, 238, 0.1);
-}
 
+.nav-links a:hover,
 .nav-links a.active {
-    color: var(--primary-color);
-    background-color: rgba(67, 97, 238, 0.1);
+    color: blue;
+    /* Text turns blue */
+    background-color: white;
+    /* White background */
+    border-radius: 8px;
+    /* Rounded corners stay */
 }
+
 
 .nav-links a i {
     font-size: 16px;
 }
 
-.nav-search {
-    display: flex;
-    align-items: center;
-    background-color: #f8f9fa;
-    border-radius: var(--border-radius);
-    padding: 5px 10px;
-    margin-left: 10px;
-}
-
-.nav-search input {
-    border: none;
-    background: transparent;
-    padding: 8px;
-    width: 150px;
-    outline: none;
-    font-family: 'Poppins', sans-serif;
-}
-
-.nav-search button {
-    background: none;
-    border: none;
-    color: #6c757d;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.nav-search button:hover {
-    color: var(--primary-color);
-}
 
 .role-selector {
-    position: relative;
-    margin-left: 10px;
+    margin-left: 15rem;
 }
 
 .role-btn {
-    background-color: var(--primary-color);
+    background-color: transparent;
     color: white;
     border: none;
-    padding: 10px 15px;
-    border-radius: var(--border-radius);
+    padding: 1px 2px;
+    border-radius: 8px;
+    /* Same as nav-links */
     font-weight: 500;
+    font-size: inherit;
+    font-family: inherit;
+    /* Inherit same font as nav-links */
     cursor: pointer;
     display: flex;
+    flex-direction: column;
+    /* Stack icon above label */
     align-items: center;
-    gap: 8px;
-    transition: var(--transition);
-}
-
-.role-btn:hover {
-    background-color: var(--secondary-color);
-}
-
-.role-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background-color: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    width: 200px;
-    padding: 10px 0;
-    opacity: 0;
-    visibility: hidden;
-    transition: var(--transition);
-    z-index: 100;
-}
-
-.role-selector:hover .role-dropdown {
-    opacity: 1;
-    visibility: visible;
-}
-
-.role-dropdown a {
-    display: block;
-    padding: 10px 15px;
+    /* Center horizontally */
+    justify-content: center;
+    /* Center vertically */
+    gap: 4px;
+    /* Space between icon and label */
+    transition: all 0.3s ease;
+    /* Smooth transitions */
     text-decoration: none;
-    color: var(--dark-color);
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    /* Prevent underline if used as link */
 }
 
-.role-dropdown a:hover {
-    background-color: #f8f9fa;
-    color: var(--primary-color);
-}
-
-.role-dropdown a i {
-    width: 20px;
-    text-align: center;
+.role-btn:hover,
+.role-btn.active {
+    color: blue;
+    /* Text turns blue */
+    background-color: white;
+    /* White rounded background */
+    border-radius: 8px;
+    /* Keep rounded */
 }
 
 .hamburger {

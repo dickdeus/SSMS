@@ -270,6 +270,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (isValid) {
                 const payload = {
+                    station_code: document.getElementById('station_code').value,
                     station_name: document.getElementById('station_name').value,
                     region_id: document.getElementById('region_id').value,
                     location: document.getElementById('location').value,
