@@ -113,21 +113,25 @@ def delete_user(id):
     db.session.delete(user)
     db.session.commit()
     return jsonify({"message": "User deleted successfully"})
+
 # API: REGIONS
 # -----------------------
 @app.route('/api/regions', methods=['GET'])
 def get_regions():
     regions = Region.query.all()
+    districts = District.query.all()
+    stations = Station.query.all()
     def safe_date(obj, attr):
         val = getattr(obj, attr, None)
         if val:
             return val.strftime("%Y-%m-%d")
         return ""
+    region_district_map = {r.id: [d.id for d in districts if d.region_id == r.id] for r in regions}
     return jsonify([
         {
             "id": r.id,
             "region_name": r.region_name,
-            "stations": 0,
+            "stations": len([s for s in stations if s.location in region_district_map[r.id]]),
             "last_updated": safe_date(r, "updated_time") or safe_date(r, "created_time")
         } for r in regions
     ])
@@ -175,6 +179,7 @@ def get_districts():
         {
             "id": d.id,
             "district_name": d.district_name,
+            "region_id": d.region_id,
             "region_name": Region.query.get(d.region_id).region_name if d.region_id else "",
             "stations": 0,
             "last_updated": safe_date(d, "updated_time") or safe_date(d, "created_time")

@@ -1,4 +1,5 @@
 
+let stations = [];
 document.addEventListener('DOMContentLoaded', function () {
     // --- Manage Stations: Dynamic Region Filter, Search, Pagination ---
     const regionFilter = document.getElementById('filter-region');
@@ -15,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-    const exportBtn = document.querySelector('.table-actions .btn-secondary i.fas.fa-download')?.parentElement;
+    const exportBtn = document.querySelector('.btn-export');
     if (exportBtn) {
         exportBtn.addEventListener('click', function () {
             exportStationsToPrint();
@@ -101,7 +102,8 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(url)
             .then(res => res.json())
             .then(data => {
-                renderStationsTable(data.items || data); // support both paginated and non-paginated
+                stations = data.items || data; // sync global stations array
+                renderStationsTable(stations); // support both paginated and non-paginated
                 totalPages = data.total_pages || 1;
                 pageIndicator.textContent = `Page ${page} of ${totalPages}`;
             })

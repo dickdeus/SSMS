@@ -106,8 +106,8 @@
     {% if session.get('role') == 'Admin' %}
     <a href="{{ url_for('manage_users') }}"><i class="bi bi-people"></i> Users</a>
     <a href="{{ url_for('datasetup') }}"><i class="bi bi-gear"></i> Data Setup</a>
-    <a href="{{ url_for('login') }}"><i class="bi bi-box-arrow-right"></i>Logout</a>
     {% endif %}
+    <a href="{{ url_for('login') }}"><i class="bi bi-box-arrow-right"></i>Logout</a>
   </div>
 
   <div class="content">

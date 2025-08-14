@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <tr>
                     <td>${r.id}</td>
                     <td>${r.region_name}</td>
-                    <td>${r.stations || '-'}</td>
+                    <td>${r.stations || '0'}</td>
                     <td>${r.last_updated || '-'}</td>
                     <td>
                         <button class="action-btn edit" data-id="${r.id}"><i class="fas fa-edit"></i></button>
@@ -279,10 +279,41 @@ document.addEventListener("DOMContentLoaded", () => {
     if (districtSearchInput) {
         districtSearchInput.addEventListener('input', function() {
             const term = this.value.trim().toLowerCase();
-            renderDistrictsTable(allDistricts.filter(d =>
-                d.district_name.toLowerCase().includes(term) ||
-                d.region_name.toLowerCase().includes(term)
-            ));
+            const selectedRegion = document.getElementById('district-region-filter').value;
+            renderDistrictsTable(allDistricts.filter(d => {
+                const matchesSearch = d.district_name.toLowerCase().includes(term) || d.region_name.toLowerCase().includes(term);
+                const matchesRegion = !selectedRegion || d.region_id == selectedRegion;
+                return matchesSearch && matchesRegion;
+            }));
+        });
+    }
+
+    // Region filter for districts
+    const districtRegionFilter = document.getElementById('district-region-filter');
+    if (districtRegionFilter) {
+        districtRegionFilter.addEventListener('change', function() {
+            const selectedRegion = this.value;
+            const term = districtSearchInput ? districtSearchInput.value.trim().toLowerCase() : '';
+            // Debug: log region values and types
+            console.log('Selected region:', selectedRegion, typeof selectedRegion);
+            allDistricts.forEach(d => {
+                console.log(`District: ${d.district_name}, region_id: ${d.region_id} (${typeof d.region_id}), region_name: ${d.region_name}`);
+            });
+                const filtered = allDistricts.filter(d => {
+                    const matchesSearch = !term || d.district_name.toLowerCase().includes(term) || d.region_name.toLowerCase().includes(term);
+                    let matchesRegion = false;
+                    if (!selectedRegion) {
+                        matchesRegion = true;
+                    } else if (d.region_id !== undefined && d.region_id !== null) {
+                        matchesRegion = String(d.region_id) === String(selectedRegion);
+                    }
+                    if (matchesRegion) {
+                        console.log(`MATCH: ${d.district_name} (region_id: ${d.region_id}, region_name: ${d.region_name})`);
+                    }
+                    return matchesSearch && matchesRegion;
+                });
+            console.log('Filtered districts:', filtered.map(d => d.district_name));
+            renderDistrictsTable(filtered);
         });
     }
 
