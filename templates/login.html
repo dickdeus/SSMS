@@ -9,51 +9,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
-    <style>
-        /* Add smooth scrolling to entire page */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Success modal animation */
-        .success-modal {
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .success-modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
-        }
-
-        .success-modal.active .modal-content {
-            transform: translateY(0);
-        }
-
-        /* Redirect message */
-        .redirect-message {
-            color: #666;
-            font-style: italic;
-            margin-top: 20px;
-            animation: pulse 1s infinite alternate;
-        }
-
-        @keyframes pulse {
-            from {
-                opacity: 0.6;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-    </style>
 </head>
 
 <body>
@@ -100,23 +55,26 @@
             </form>
     </div>
 
-    <script>
-        // Add this to your existing systemlogin.js
-        document.addEventListener('DOMContentLoaded', function () {
-            showLogin.addEventListener('click', function (e) {
-                e.preventDefault();
-                // Your existing form toggle code...
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const passwordInput = document.getElementById("password");
+        const toggleButton = document.getElementById("show-login-password");
+        const icon = toggleButton.querySelector("i");
 
-            // Modified login success handler
-            loginForm.addEventListener('submit', function (e) {
-                e.preventDefault();
-                const email = document.getElementById('login-email').value;
-                const password = document.getElementById('login-password').value;
-            });
+        toggleButton.addEventListener("click", function () {
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                passwordInput.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
         });
-    </script>
+    });
+</script>
+
 </body>
 
 </html>
