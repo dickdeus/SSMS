@@ -91,8 +91,13 @@
       <div class="card-icon">
         <i class="fas fa-users"></i>
       </div>
-      <h3>Number of Users</h3>
-      <p>{{ user_count }}</p>
+      {% if is_supporter %}
+        <h3>Stations in Your Location</h3>
+        <p>{{ supporter_station_count }}</p>
+      {% else %}
+        <h3>Number of Users</h3>
+        <p>{{ user_count }}</p>
+      {% endif %}
     </div>
 
     <div class="card card-region">
@@ -135,7 +140,7 @@
             <div class="progress-container">
               {% set percent = (region[1] * 100 / total) | round(1) %}
               <div class="progress-bar" style="width: {{ percent }}%"></div>
-              <span>{{ percent }}%</span>
+              <span style="color: #0d110e; font-weight: bold;">{{ percent }}%</span>
             </div>
           </td>
           <td>

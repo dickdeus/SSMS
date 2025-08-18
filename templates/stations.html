@@ -22,13 +22,17 @@
 
         <nav class="station-nav">
             <ul>
-                <li class="active" data-section="register"><a href="#register"><i class="fas fa-plus-circle"></i>Register</a></li>
-                <li data-section="manage"><a href="#manage"><i class="fas fa-tasks"></i> Manage</a></li>
-                <li data-section="view"><a href="#view"><i class="fas fa-search"></i> View</a></li>
-                <li data-section="connect"><a href="#connect"><i class="fas fa-plug"></i> Connect</a></li>
+
+                    {% if role == 'admin' %}
+                        <li class="active" data-section="register"><a href="#register"><i class="fas fa-plus-circle"></i>Register</a></li>
+                        <li data-section="manage"><a href="#manage"><i class="fas fa-tasks"></i> Manage</a></li>
+                    {% endif %}
+                    <li data-section="view"><a href="#view"><i class="fas fa-search"></i> View</a></li>
+                    <li data-section="connect"><a href="#connect"><i class="fas fa-plug"></i> Connect</a></li>
             </ul>
         </nav>
 
+    {% if role == 'admin' %}
         <div class="content-section" id="register-section">
             <h2><i class="fas fa-plus-circle"></i> Register New Station</h2>
             <div class="form-container">
@@ -104,7 +108,9 @@
                 </div>
             </div>
         </div>
+        {% endif %}
 
+        {% if role == 'admin' %}
         <div class="content-section" id="manage-section" style="display: none;">
             <h2><i class="fas fa-tasks"></i> Manage Stations</h2>
             <div class="management-tools">
@@ -155,10 +161,38 @@
                 </div>
             </div>
         </div>
+        {% endif %}
 
         <div class="content-section" id="view-section" style="display: none;">
             <h2><i class="fas fa-search"></i> View Station Details</h2>
             <div class="view-container">
+                {% if role == 'support' or role == 'supporter' %}
+                <div class="stations-table-container">
+                    <table id="stations-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Station Code</th>
+                                <th>Station Name</th>
+                                <th>Group</th>
+                                <th>District</th>
+                                <th>Contact Name</th>
+                                <th>Contact Number</th>
+                                <th>IP Address</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Dynamic rows will be inserted here by JS -->
+                        </tbody>
+                    </table>
+                    <div class="table-pagination">
+                        <button class="btn-secondary" id="prev-page"><i class="fas fa-chevron-left"></i> Previous</button>
+                        <span id="page-indicator">Page 1 of 5</span>
+                        <button class="btn-secondary" id="next-page">Next <i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                {% else %}
                 <div class="station-details">
                     <div class="detail-card">
                         <div class="detail-header">
@@ -197,9 +231,11 @@
                             <div id="station-detail-message" style="text-align:center;color:#888;margin-top:1em;">No details available. Select a station to view details.</div>
                         </div>
                         <div class="detail-actions">
-                            <button class="btn-primary"><i class="fas fa-edit"></i> Edit</button>
-                            <button class="btn-secondary"><i class="fas fa-chart-line"></i> Statistics</button>
-                            <button class="btn-connect"><i class="fas fa-plug"></i> Connect</button>
+                                {% if role == 'admin' %}
+                                    <button class="btn-primary"><i class="fas fa-edit"></i> Edit</button>
+                                    <button class="btn-secondary"><i class="fas fa-chart-line"></i> Statistics</button>
+                                {% endif %}
+                                <button class="btn-connect"><i class="fas fa-plug"></i> Connect</button>
                         </div>
                     </div>
                     <div class="station-map">
@@ -209,6 +245,7 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
             </div>
         </div>
 
@@ -248,6 +285,7 @@
         </div>
     </div>
 
+    <input type="hidden" id="user-role" value="{{ role }}">
     <script src="{{ url_for('static', filename='js/station.js')}}"></script>
 {% endblock %}
 </body>

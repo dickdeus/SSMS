@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 <tr>
                                     <td>${r.id}</td>
                                     <td>${r.region_name}</td>
-                                    <td>${r.stations || '-'}</td>
+                                    <td>${r.stations || '0'}</td>
                                     <td>${r.last_updated || '-'}</td>
                                 </tr>
                             `).join('')}
@@ -169,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const r = data.find(x => x.id == id);
                 if (r) {
                     regionIdInput.value = r.id;
-                    regionNameInput.value = r.name;
+                    regionNameInput.value = r.region_name;
                     regionFormContainer.style.display = "block";
                 }
             });
@@ -335,7 +335,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const d = data.find(x => x.id == id);
                 if (d) {
                     districtIdInput.value = d.id;
-                    districtNameInput.value = d.name;
+                    districtNameInput.value = d.district_name;
                     districtRegionSelect.value = d.region_id;
                     districtFormContainer.style.display = "block";
                 }
@@ -465,7 +465,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const g = data.find(x => x.id == id);
                 if (g) {
                     groupIdInput.value = g.id;
-                    groupNameInput.value = g.name;
+                    groupNameInput.value = g.group_name;
                     groupFormContainer.style.display = "block";
                 }
             });

@@ -151,10 +151,18 @@ def update_region(id):
     region = Region.query.get_or_404(id)
     region_name = data.get('region_name') or data.get('name')
     region.region_name = region_name
+    if 'updated_time' in data:
+        region.updated_time = datetime.strptime(data['updated_time'], "%Y-%m-%d %H:%M:%S")
+    else:
+        region.updated_time = datetime.utcnow()
+    # if 'created_time' in data:
+    #     region.created_time = datetime.strptime(data['created_time'], "%Y-%m-%d %H:%M:%S")
+    # else:
+    #     region.created_time = datetime.utcnow()
+    # db.session.add(region)
     db.session.commit()
     return jsonify({"message": "Region updated successfully"})
 
-#@app.route('/api/regions/<int:id>', methods=['DELETE'])
 @app.route('/api/regions/<int:id>', methods=['DELETE'])
 def delete_region(id):
     region = Region.query.get_or_404(id)
@@ -284,6 +292,11 @@ def login():
 @app.route('/dashboard')
 @login_required
 def dashboard():
+    user_id = session.get('user_id')
+    user_role = session.get('role')
+    user_obj = User.query.get(user_id) if user_id else None
+    is_supporter = (user_role and user_role.lower() in ['support', 'supporter'])
+    supporter_station_count = Station.query.filter_by(location=user_obj.location).count() if is_supporter and user_obj and user_obj.location else 0
     station_count = Station.query.count()
     user_count = User.query.count()
 
@@ -319,7 +332,9 @@ def dashboard():
                            top_region=top_region,
                            top_regions=top_regions,
                            top_district=top_district,
-                           top_districts=top_districts)
+                           top_districts=top_districts,
+                           is_supporter=is_supporter,
+                           supporter_station_count=supporter_station_count)
 
 @app.route('/datasetup', methods=['GET'])
 @login_required
@@ -491,7 +506,8 @@ def view_stations():
         s.id: District.query.get(s.location).district_name if District.query.get(s.location) else "N/A"
         for s in stations.items
     }
-    return render_template('stations.html', stations=stations, regions=regions, search=search, districts=districts, groups=groups, district_map=district_map)
+    role = session.get('role', '').lower()
+    return render_template('stations.html', stations=stations, regions=regions, search=search, districts=districts, groups=groups, district_map=district_map, role=role)
 
 @app.route('/stations/add', methods=['GET', 'POST'])
 @login_required

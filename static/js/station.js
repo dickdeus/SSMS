@@ -1,6 +1,9 @@
 
 let stations = [];
 document.addEventListener('DOMContentLoaded', function () {
+    // Get user role from hidden input
+    const userRoleInput = document.getElementById('user-role');
+    const userRole = userRoleInput ? userRoleInput.value : '';
     // --- Manage Stations: Dynamic Region Filter, Search, Pagination ---
     const regionFilter = document.getElementById('filter-region');
     const searchInput = document.getElementById('station-search');
@@ -96,21 +99,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Fetch stations with filters and pagination
     function loadStations(page = 1) {
-        let url = `/api/stations?page=${page}&per_page=${currentItemsPerPage}`;
-        if (currentRegion) url += `&region_id=${currentRegion}`;
-        if (currentSearch) url += `&search=${encodeURIComponent(currentSearch)}`;
-        fetch(url)
-            .then(res => res.json())
-            .then(data => {
-                stations = data.items || data; // sync global stations array
-                renderStationsTable(stations); // support both paginated and non-paginated
-                totalPages = data.total_pages || 1;
-                pageIndicator.textContent = `Page ${page} of ${totalPages}`;
-            })
-            .catch(err => {
-                console.error('Error loading stations', err);
-                stationsTable.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#888;">Error loading stations</td></tr>`;
-            });
+            let url = `/api/stations?page=${page}&per_page=${currentItemsPerPage}`;
+            if (currentRegion) url += `&region_id=${currentRegion}`;
+            if (currentSearch) url += `&search=${encodeURIComponent(currentSearch)}`;
+            // If support, filter by user's district (assume district is available in session or template)
+            if (userRole === 'supporter') {
+                const userDistrict = userRoleInput.getAttribute('data-district');
+                if (userDistrict) {
+                    url += `&district_id=${userDistrict}`;
+                }
+            }
+            fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    stations = data.items || data;
+                    renderStationsTable(stations);
+                    totalPages = data.total_pages || 1;
+                    pageIndicator.textContent = `Page ${page} of ${totalPages}`;
+                })
+                .catch(err => {
+                    console.error('Error loading stations', err);
+                    stationsTable.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#888;">Error loading stations</td></tr>`;
+                });
     }
 
     // Region filter
@@ -310,32 +320,26 @@ document.addEventListener('DOMContentLoaded', function () {
     // Table rendering with View/Edit/Delete
     const stationsTable = document.getElementById('stations-table').getElementsByTagName('tbody')[0];
     function renderStationsTable(stations) {
-        stationsTable.innerHTML = '';
-        stations.forEach(station => {
-            const row = stationsTable.insertRow();
-            // <-- IMPORTANT: set type="button" to avoid accidental form submits -->
-            row.innerHTML = `
-                <td>${station.id}</td>
-                <td>${station.station_code || ''}</td>
-                <td>${station.station_name || ''}</td>
-                <td>${station.group_name || ''}</td>
-                <td>${station.district_name || ''}</td>
-                <td>${station.contact_name || ''}</td>
-                <td>${station.contact_number || ''}</td>
-                <td>${station.connect_IP_Address || ''}</td>
-                <td>
-                    <button type="button" class="btn-secondary btn-sm view-station" data-id="${station.id}">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button type="button" class="btn-secondary btn-sm edit-station" data-id="${station.id}">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button type="button" class="btn-secondary btn-sm delete-station" data-id="${station.id}">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                </td>
-            `;
-        });
+            stationsTable.innerHTML = '';
+            stations.forEach(station => {
+                const row = stationsTable.insertRow();
+                let actions = `<button type="button" class="btn-secondary btn-sm view-station" data-id="${station.id}"><i class="fas fa-eye"></i></button>`;
+                if (userRole === 'admin') {
+                    actions += `<button type="button" class="btn-secondary btn-sm edit-station" data-id="${station.id}"><i class="fas fa-edit"></i></button>`;
+                    actions += `<button type="button" class="btn-secondary btn-sm delete-station" data-id="${station.id}"><i class="fas fa-trash-alt"></i></button>`;
+                }
+                row.innerHTML = `
+                    <td>${station.id}</td>
+                    <td>${station.station_code || ''}</td>
+                    <td>${station.station_name || ''}</td>
+                    <td>${station.group_name || ''}</td>
+                    <td>${station.district_name || ''}</td>
+                    <td>${station.contact_name || ''}</td>
+                    <td>${station.contact_number || ''}</td>
+                    <td>${station.connect_IP_Address || ''}</td>
+                    <td>${actions}</td>
+                `;
+            });
     }
 
     // Event delegation for actions (robust & minimal)
@@ -462,15 +466,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-    // Initial load if manage section is active
+    // Initial load for admin (manage) and support (view)
     const activeNav = document.querySelector('.station-nav li.active');
-    if (activeNav && activeNav.getAttribute('data-section') === 'manage') {
+    if (userRole === 'admin' && activeNav && activeNav.getAttribute('data-section') === 'manage') {
+        loadStations(currentPage);
+    }
+    if ((userRole === 'support' || userRole === 'supporter')) {
         loadStations(currentPage);
     }
     const manageNav = document.querySelector('[data-section="manage"]');
     if (manageNav) {
         manageNav.addEventListener('click', function () {
-            loadStations(currentPage);
+            if (userRole === 'admin') loadStations(currentPage);
+        });
+    }
+    const viewNav = document.querySelector('[data-section="view"]');
+    if (viewNav) {
+        viewNav.addEventListener('click', function () {
+            if (userRole === 'support' || userRole === 'supporter') loadStations(currentPage);
         });
     }
 
