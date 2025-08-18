@@ -228,14 +228,13 @@
                                 <span class="detail-label">Contact:</span>
                                 <span class="detail-value">-</span>
                             </div>
-                            <div id="station-detail-message" style="text-align:center;color:#888;margin-top:1em;">No details available. Select a station to view details.</div>
                         </div>
+
                         <div class="detail-actions">
-                                {% if role == 'admin' %}
-                                    <button class="btn-primary"><i class="fas fa-edit"></i> Edit</button>
-                                    <button class="btn-secondary"><i class="fas fa-chart-line"></i> Statistics</button>
-                                {% endif %}
-                                <button class="btn-connect"><i class="fas fa-plug"></i> Connect</button>
+                                    <button class="btn-primary"><i class="fas fa-plug"></i> Connect</button>
+                                    <button class="btn-exit" onclick="document.querySelector('.detail-card').style.display='none';">
+                                        <i class="fas fa-door-open door-icon"></i> Close
+                                    </button>
                         </div>
                     </div>
                     <div class="station-map">

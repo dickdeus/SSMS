@@ -67,6 +67,11 @@ header h1 i {
 
 .station-nav {
     margin-bottom: 30px;
+    position: sticky;
+    z-index: 1000;
+    width: 100%;
+    top: 0;
+    background: white;
 }
 
 .station-nav ul {
@@ -207,8 +212,8 @@ textarea {
 }
 
 .btn-secondary {
-    background-color: white;
-    color: var(--primary-color);
+    background-color: var(--primary-color);
+    color: white;
     border: 1px solid var(--primary-color);
     padding: 12px 20px;
     border-radius: var(--border-radius);
@@ -221,14 +226,14 @@ textarea {
 }
 
 .btn-secondary:hover {
-    background-color: #f8f9fa;
+    background-color: var(--secondary-color);
     transform: translateY(-2px);
 }
 
-.btn-connect {
-    background-color: var(--success-color);
+.btn-exit {
+    background-color: rgb(13, 155, 220);
     color: white;
-    border: none;
+    border: solid rgb(13, 155, 220);
     padding: 12px 20px;
     border-radius: var(--border-radius);
     font-weight: 500;
@@ -237,24 +242,49 @@ textarea {
     display: flex;
     align-items: center;
     gap: 8px;
+    margin-left: auto;
 }
 
-.btn-connect:hover {
-    background-color: #3aa8d8;
+.btn-exit:hover {
+    background-color: rgb(0, 120, 176);
+    border: solid rgb(0, 120, 176);
     transform: translateY(-2px);
 }
 
+.btn-exit .fa-door-open::before {
+    transition: content 0.3s;
+}
+
+.btn-exit:hover .fa-door-open::before {
+    content: "\f52a";
+    /* unicode for fa-door-closed */
+}
+
 .form-preview {
+    position: fixed;
+    top: 200px;
+    right: 80px;
+    margin-top: 70px;
+    display: flex;
+    flex-direction: column;
     background-color: #f8f9fa;
     border-radius: var(--border-radius);
     padding: 20px;
+    box-shadow: var(--box-shadow);
+    z-index: 1000;
+    max-height: 80vh;
+    overflow-y: auto;
+    width: 35%;
 }
+
 
 .preview-card {
     background: white;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     overflow: hidden;
+    margin-left: 0;
+    margin-top: 30px;
     transition: var(--transition);
 }
 
@@ -267,22 +297,34 @@ textarea {
     gap: 15px;
 }
 
-.preview-header i {
-    font-size: 24px;
-}
-
-.preview-header h4 {
-    margin: 0;
-    font-weight: 500;
-}
-
 .preview-body {
     padding: 15px;
 }
 
+
+.preview-header h4 {
+    font-size: 20px;
+    /* larger station name */
+    font-weight: 600;
+}
+
+.preview-header i {
+    font-size: 26px;
+    /* bigger icon */
+}
+
 .preview-body p {
-    margin-bottom: 10px;
-    font-size: 14px;
+    font-size: 20px;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.preview-body strong {
+    font-size: 16px;
+}
+
+.preview-body span {
+    font-size: 16px;
 }
 
 .management-tools {
@@ -528,14 +570,6 @@ textarea {
     font-weight: 500;
 }
 
-.connection-viewer {
-    background-color: #f8f9fa;
-    border-radius: var(--border-radius);
-    height: 400px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 
 .viewer-placeholder {
     text-align: center;
