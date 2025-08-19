@@ -342,6 +342,9 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+
+    
+
     // Event delegation for actions (robust & minimal)
     if (stationsTable) {
         stationsTable.addEventListener('click', function (e) {

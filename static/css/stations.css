@@ -422,9 +422,16 @@ textarea {
 }
 
 .station-details {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    display: none;
+    position: absolute;
+    z-index: 999;
+    left: 30%;
+    top: 10%;
+    box-shadow: 5px 5px 8px gray;
+    border: solid 1px gray;
+    border-radius: 10px;
+    max-width: 90%;
+    
 }
 
 .detail-card {
