@@ -178,6 +178,8 @@ def delete_region(id):
 @app.route('/api/districts', methods=['GET'])
 def get_districts():
     districts = District.query.all()
+    stations = Station.query.all()
+    
     def safe_date(obj, attr):
         val = getattr(obj, attr, None)
         if val:
@@ -189,7 +191,7 @@ def get_districts():
             "district_name": d.district_name,
             "region_id": d.region_id,
             "region_name": Region.query.get(d.region_id).region_name if d.region_id else "",
-            "stations": 0,
+            "stations": len([s for s in stations if s.location == d.id]),
             "last_updated": safe_date(d, "updated_time") or safe_date(d, "created_time")
         } for d in districts
     ])

@@ -210,7 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 <th>ID</th>
                                 <th>District Name</th>
                                 <th>Region</th>
-                                <th>Last Updated</th>
+                                <th>Stations</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -219,7 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                     <td>${d.id}</td>
                                     <td>${d.district_name}</td>
                                     <td>${d.region_name}</td>
-                                    <td>${d.last_updated || '-'}</td>
+                                    <td>${d.stations || '0'}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -261,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <td>${d.id}</td>
                     <td>${d.district_name}</td>
                     <td>${d.region_name}</td>
-                    <td>${d.last_updated || '-'}</td>
+                    <td>${d.stations || '0'}</td>
                     <td>
                         <button class="action-btn edit" data-id="${d.id}"><i class="fas fa-edit"></i></button>
                         <button class="action-btn delete" data-id="${d.id}"><i class="fas fa-trash"></i></button>
