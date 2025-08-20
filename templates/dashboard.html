@@ -88,13 +88,17 @@
     </div>
 
     <div class="card card-users">
-      <div class="card-icon">
-        <i class="fas fa-users"></i>
-      </div>
+
       {% if is_supporter %}
+      <div class="card-icon">
+        <i class="fas fa-map-marker-alt"></i>
+      </div>
         <h3>Stations in Your Location</h3>
         <p>{{ supporter_station_count }}</p>
       {% else %}
+      <div class="card-icon">
+        <i class="fas fa-users"></i>
+      </div>
         <h3>Number of Users</h3>
         <p>{{ user_count }}</p>
       {% endif %}

@@ -17,7 +17,11 @@
 
     <div class="container">
         <header>
+            {% if role == 'admin' %}
             <h1><i class="fas fa-broadcast-tower"></i> Station Management</h1>
+            {% else %}
+            <h1><i class=""></i> View Stations and Connect </h1>
+            {% endif %}
         </header>
 
         <nav class="station-nav">
@@ -28,10 +32,9 @@
                         <li data-section="manage"><a href="#manage"><i class="fas fa-tasks"></i> Manage</a></li>
                     {% endif %}
 
-                    {% if role == 'supporter' %}
+                    <!-- {% if role == 'supporter' %}
                     <li data-section="view"><a href="#view"><i class="fas fa-search"></i> View</a></li>
-                    <li data-section="connect"><a href="#connect"><i class="fas fa-plug"></i> Connect</a></li>
-                    {% endif %}
+                    {% endif %} -->
             </ul>
         </nav>
 
@@ -113,16 +116,17 @@
         </div>
         {% endif %}
 
-        {% if role == 'admin' %}
-        <div class="content-section" id="manage-section" style="display: none;">
-            <h2><i class="fas fa-tasks"></i> Manage Stations</h2>
+        <div class="content-section" id="manage-section" {% if role == 'admin' %} style="display: none;" {% endif %}>
+            <h2><i class="fas fa-tasks"></i> {% if role == 'admin' %}Manage Stations{% else %}Stations{% endif %}</h2>
             <div class="management-tools">
                 <div class="search-filter">
                     <input type="text" placeholder="Search stations..." id="station-search">
                     <select id="filter-region">
                         <option value="">All Regions</option>
                     </select>
+                    {% if role == 'admin' %}
                     <button class="btn-secondary btn-export" style="margin-left:10px;"><i class="fas fa-download"></i> Export</button>
+                    {% endif %}
                 </div>
 
                 <div class="pagination-controls">
@@ -157,13 +161,14 @@
                 </table>
 
                 <div class="table-pagination">
-                <div class="table-pagination">
-                    <button class="btn-secondary" id="prev-page"><i class="fas fa-chevron-left"></i> Previous</button>
-                    <span id="page-indicator">Page 1 of 5</span>
-                    <button class="btn-secondary" id="next-page">Next <i class="fas fa-chevron-right"></i></button>
+                    <div class="table-pagination">
+                        <button class="btn-secondary" id="prev-page"><i class="fas fa-chevron-left"></i> Previous</button>
+                        <span id="page-indicator">Page 1 of 5</span>
+                        <button class="btn-secondary" id="next-page">Next <i class="fas fa-chevron-right"></i></button>
+                    </div>
                 </div>
-            </div>
 
+                
                 <div class="station-details">
                     <div class="detail-card">
                         <div class="detail-header">
@@ -216,93 +221,6 @@
                         </div>
                     </div>
                 </div>
-
-
-        </div>
-        {% endif %}
-
-        <div class="content-section" id="view-section" style="display: none;">
-            <h2><i class="fas fa-search"></i> View Station Details</h2>
-            <div class="view-container">
-                {% if role == 'support' or role == 'supporter' %}
-                <div class="stations-table-container">
-                    <table id="stations-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Station Code</th>
-                                <th>Station Name</th>
-                                <th>Group</th>
-                                <th>District</th>
-                                <th>Contact Name</th>
-                                <th>Contact Number</th>
-                                <th>IP Address</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Dynamic rows will be inserted here by JS -->
-                        </tbody>
-                    </table>
-                    <div class="table-pagination">
-                        <button class="btn-secondary" id="prev-page"><i class="fas fa-chevron-left"></i> Previous</button>
-                        <span id="page-indicator">Page 1 of 5</span>
-                        <button class="btn-secondary" id="next-page">Next <i class="fas fa-chevron-right"></i></button>
-                    </div>
-                </div>
-                {% else %}
-                <div class="station-details">
-                    <div class="detail-card">
-                        <div class="detail-header">
-                            <i class="fas fa-broadcast-tower"></i>
-                            <h3 id="station-detail-title">No station selected</h3>
-                        </div>
-                        <div class="detail-body" id="station-detail-body">
-                            <div class="detail-row">
-                                <span class="detail-label">Station Code:</span>
-                                <span class="detail-value">-</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Region:</span>
-                                <span class="detail-value">-</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">District:</span>
-                                <span class="detail-value">-</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">IP Address:</span>
-                                <span class="detail-value">-</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Status:</span>
-                                <span class="detail-value status-active">-</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Last Updated:</span>
-                                <span class="detail-value">-</span>
-                            </div>
-                            <div class="detail-row full-width">
-                                <span class="detail-label">Contact:</span>
-                                <span class="detail-value">-</span>
-                            </div>
-                        </div>
-
-                        <div class="detail-actions">
-                                    <button class="btn-primary"><i class="fas fa-plug"></i> Connect</button>
-                                    <button class="btn-exit" onclick="document.querySelector('.detail-card').style.display='none';">
-                                        <i class="fas fa-door-open door-icon"></i> Close
-                                    </button>
-                        </div>
-                    </div>
-                    <div class="station-map">
-                        <div class="map-placeholder">
-                            <i class="fas fa-map-marked-alt"></i>
-                            <p>Station Location Map</p>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
             </div>
         </div>
 
@@ -342,17 +260,60 @@
         </div>
     </div>
 
+    <!-- Station Details & Connect Modal -->
+<div class="modal fade" id="stationModal" tabindex="-1" aria-labelledby="stationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="stationModalLabel"><i class="fas fa-broadcast-tower"></i> Station Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <!-- Left: Details -->
+          <div class="col-md-7">
+            <div class="detail-body">
+              <p><strong>Station Code:</strong> <span id="detail-station-code">-</span></p>
+              <p><strong>Name:</strong> <span id="detail-station-name">-</span></p>
+              <p><strong>Region:</strong> <span id="detail-region">-</span></p>
+              <p><strong>District:</strong> <span id="detail-district">-</span></p>
+              <p><strong>IP Address:</strong> <span id="detail-ip">-</span></p>
+              <p><strong>Contact:</strong> <span id="detail-contact">-</span></p>
+            </div>
+          </div>
+          <!-- Right: Connect -->
+          <div class="col-md-5 border-start">
+            <h6><i class="fas fa-plug"></i> Connect</h6>
+            <input type="text" class="form-control mb-2" id="station-connect" placeholder="Enter IP or Station ID">
+            <button class="btn btn-primary w-100 mb-2" id="connect-btn">
+              <i class="fas fa-link"></i> Connect
+            </button>
+            <div class="connection-status">
+              <div class="status-indicator">
+                <div class="indicator-circle"></div>
+                <span>Status: <strong id="connection-status">Disconnected</strong></span>
+              </div>
+              <p><small>Latency: <span id="latency">-</span></small></p>
+              <p><small>Uptime: <span id="uptime">-</span></small></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        {% if role == 'admin' %}
+          <button class="btn btn-secondary" id="edit-btn"><i class="fas fa-edit"></i> Edit</button>
+        {% endif %}
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
     <input type="hidden" id="user-role" value="{{ role }}">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/station.js')}}"></script>
-    <script>
-        function showstationdetail() {
-            document.querySelector(".station-details").style.display = "block";
-        }
-
-        document.querySelector(".btn-secondary.btn-sm.view-station").addEventListener("click", showstationdetail);
-    </script>
-
 {% endblock %}
+
 </body>
 
 </html>

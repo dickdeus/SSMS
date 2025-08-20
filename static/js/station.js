@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let totalPages = 1;
     let currentRegion = '';
     let currentSearch = '';
-    let currentItemsPerPage = parseInt(itemsPerPage.value);
+        let currentItemsPerPage = itemsPerPage ? parseInt(itemsPerPage.value) : 50;
 
 
 
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Items per page
-    if (itemsPerPage) {
+    if (itemsPerPage && typeof itemsPerPage.addEventListener === 'function') {
         itemsPerPage.addEventListener('change', function () {
             currentItemsPerPage = parseInt(this.value);
             currentPage = 1;
@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Pagination controls
-    if (prevPageBtn) {
+    if (prevPageBtn && typeof prevPageBtn.addEventListener === 'function') {
         prevPageBtn.addEventListener('click', function () {
             if (currentPage > 1) {
                 currentPage--;
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-    if (nextPageBtn) {
+    if (nextPageBtn && typeof nextPageBtn.addEventListener === 'function') {
         nextPageBtn.addEventListener('click', function () {
             if (currentPage < totalPages) {
                 currentPage++;
@@ -317,36 +317,59 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Table rendering with View/Edit/Delete
-    const stationsTable = document.getElementById('stations-table').getElementsByTagName('tbody')[0];
+    // --- Table rendering with View/Edit/Delete ---
     function renderStationsTable(stations) {
-            stationsTable.innerHTML = '';
-            stations.forEach(station => {
-                const row = stationsTable.insertRow();
-                let actions = `<button type="button" class="btn-secondary btn-sm view-station" data-id="${station.id}"><i class="fas fa-eye"></i></button>`;
-                if (userRole === 'admin') {
-                    actions += `<button type="button" class="btn-secondary btn-sm edit-station" data-id="${station.id}"><i class="fas fa-edit"></i></button>`;
-                    actions += `<button type="button" class="btn-secondary btn-sm delete-station" data-id="${station.id}"><i class="fas fa-trash-alt"></i></button>`;
-                }
-                row.innerHTML = `
-                    <td>${station.id}</td>
-                    <td>${station.station_code || ''}</td>
-                    <td>${station.station_name || ''}</td>
-                    <td>${station.group_name || ''}</td>
-                    <td>${station.district_name || ''}</td>
-                    <td>${station.contact_name || ''}</td>
-                    <td>${station.contact_number || ''}</td>
-                    <td>${station.connect_IP_Address || ''}</td>
-                    <td>${actions}</td>
-                `;
-            });
+        let stationsTable;
+        // Both admin and supporters now use manage-section
+        const manageSection = document.getElementById('manage-section');
+        stationsTable = manageSection ? manageSection.querySelector('#stations-table tbody') : null;
+
+        if (!stationsTable) return;
+        stationsTable.innerHTML = '';
+        if (!stations || stations.length === 0) {
+            stationsTable.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#888;">No stations found</td></tr>`;
+            return;
+        }
+        stations.forEach(station => {
+            const row = stationsTable.insertRow();
+            let actions = `<button type="button" class="btn-secondary btn-sm view-station" data-id="${station.id}"><i class="fas fa-eye"></i></button>`;
+            if (userRole === 'admin') {
+                actions += `<button type="button" class="btn-secondary btn-sm edit-station" data-id="${station.id}"><i class="fas fa-edit"></i></button>`;
+                actions += `<button type="button" class="btn-secondary btn-sm delete-station" data-id="${station.id}"><i class="fas fa-trash-alt"></i></button>`;
+            }
+            row.innerHTML = `
+                <td>${station.id}</td>
+                <td>${station.station_code || ''}</td>
+                <td>${station.station_name || ''}</td>
+                <td>${station.group_name || ''}</td>
+                <td>${station.district_name || ''}</td>
+                <td>${station.contact_name || ''}</td>
+                <td>${station.contact_number || ''}</td>
+                <td>${station.connect_IP_Address || ''}</td>
+                <td>${actions}</td>
+            `;
+        });
     }
 
-
-    
-
     // Event delegation for actions (robust & minimal)
-    if (stationsTable) {
+    function setupTableDelegation() {
+        let stationsTable;
+        // if (userRole === 'support' || userRole === 'supporter') {
+        //     const viewSection = document.getElementById('view-section');
+        //     stationsTable = viewSection ? viewSection.querySelector('#stations-table tbody') : null;
+        // } else if (userRole === 'admin') {
+        //     const manageSection = document.getElementById('manage-section');
+        //     stationsTable = manageSection ? manageSection.querySelector('#stations-table tbody') : null;
+        // }
+        if (userRole === 'support' || userRole === 'supporter') {
+            const manageSection = document.getElementById('manage-section');
+            stationsTable = manageSection ? manageSection.querySelector('#stations-table tbody') : null;
+        } else if (userRole === 'admin') {
+            const manageSection = document.getElementById('manage-section');
+            stationsTable = manageSection ? manageSection.querySelector('#stations-table tbody') : null;
+        }
+
+        if (!stationsTable) return;
         stationsTable.addEventListener('click', function (e) {
             const viewBtn = e.target.closest('.view-station');
             if (viewBtn) {
@@ -356,14 +379,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 showStationDetails(id);
                 return;
             }
-
             const editBtn = e.target.closest('.edit-station');
             if (editBtn) {
                 const id = editBtn.getAttribute('data-id');
                 window.location.href = `/stations/edit/${id}`;
                 return;
             }
-
             const delBtn = e.target.closest('.delete-station');
             if (delBtn) {
                 const id = delBtn.getAttribute('data-id');
@@ -386,85 +407,88 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+    // Call after table is rendered
+    setupTableDelegation();
 
     // --- View Station Details ---
-    function showStationDetails(id) {
-        console.log("View button clicked for id=", id);
-        console.log("Fetching station details for", id);
+function showStationDetails(id) {
+    console.log("View button clicked for id=", id);
+    console.log("Fetching /api/stations/" + id);
 
-        // --- Switch to View tab FIRST ---
-        navItems.forEach(li => li.classList.remove('active'));
-        document.querySelector('[data-section="view"]').classList.add('active');
+    fetch(`/api/stations/${id}`)
+        .then(res => res.ok ? res.json() : Promise.reject(`Server error: ${res.status}`))
+        .then(station => {
+            console.log("Station API response:", station);
 
-        contentSections.forEach(s => s.style.display = 'none');
-        const viewSection = document.getElementById('view-section');
-        viewSection.style.display = 'block';
-
-        // Make sure all parent containers are visible
-        let parent = viewSection.parentElement;
-        while (parent) {
-            if (getComputedStyle(parent).display === 'none') {
-                parent.style.display = 'block';
+            if (!station || Object.keys(station).length === 0) {
+                alert("No station details found.");
+                return;
             }
-            parent = parent.parentElement;
-        }
 
-        // Show "loading" while we fetch
-        document.getElementById('station-detail-title').textContent = "Loading...";
-        document.getElementById('station-detail-message').style.display = 'none';
+            // Helper to safely set text content
+            const setText = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = value ?? '-';
+            };
 
-        // --- Fetch station data ---
-        fetch(`/api/stations/${id}`)
-            .then(res => res.json())
-            .then(station => {
-                console.log("Station API response:", station);
+            // Fill modal details
+            setText('detail-station-code', station.station_code);
+            setText('detail-station-name', station.station_name);
+            setText('detail-region', station.region_name);
+            setText('detail-district', station.district_name);
+            setText('detail-ip', station.connect_IP_Address);
+            setText('detail-contact', station.contact_name ? `${station.contact_name}, ${station.contact_number}` : '-');
 
-                if (!station || Object.keys(station).length === 0) {
-                    document.getElementById('station-detail-title').textContent = 'No station selected';
-                    document.getElementById('station-detail-message').style.display = 'block';
-                    return;
-                }
+            // Prefill connect input
+            const connectInput = document.getElementById('station-connect');
+            if (connectInput) connectInput.value = station.connect_IP_Address || station.station_code || '';
 
-                // Fill details
-                document.getElementById('station-detail-title').textContent = station.station_name || 'No station selected';
-                const detailValues = document.querySelectorAll('#view-section .detail-value');
-                detailValues[0].textContent = station.station_code || '-';
-                detailValues[1].textContent = station.region_name || '-';
-                detailValues[2].textContent = station.district_name || '-';
-                detailValues[3].textContent = station.connect_IP_Address || '-';
-                detailValues[4].textContent = station.id ? 'Active' : '-';
-                detailValues[5].textContent = station.created_time || '-';
-                detailValues[6].textContent = station.contact_name ? `${station.contact_name}, ${station.contact_number}` : '-';
+            // Show modal
+            const modalEl = document.getElementById('stationModal');
+            if (modalEl) {
+                const bsModal = new bootstrap.Modal(modalEl);
+                bsModal.show();
+            }
 
-                // Map placeholder update
-                const mapPlaceholder = document.querySelector('.station-map .map-placeholder');
-                if (mapPlaceholder) {
-                    mapPlaceholder.innerHTML = `
-                        <i class="fas fa-map-marked-alt"></i>
-                        <p>Location: ${station.district_name || 'Unknown'}, ${station.region_name || 'Unknown'}</p>
-                    `;
-                }
+            // Reset connection UI
+            const connectBtn = document.getElementById('connect-btn');
+            const indicator = document.querySelector('.indicator-circle');
+            setText('connection-status', 'Disconnected');
+            setText('latency', '-');
+            setText('uptime', '-');
+            if (indicator) indicator.style.backgroundColor = '#ccc';
+            if (connectBtn) {
+                connectBtn.disabled = false;
+                connectBtn.innerHTML = '<i class="fas fa-link"></i> Connect';
+                connectBtn.onclick = () => {
+                    connectBtn.disabled = true;
+                    connectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
+                    setText('connection-status', 'Connecting...');
+                    if (indicator) indicator.style.backgroundColor = '#f39c12';
 
-                // Edit button
-                document.querySelector('.detail-actions .btn-primary').onclick = function () {
-                    window.location.href = `/stations/edit/${id}`;
+                    setTimeout(() => {
+                        if (indicator) indicator.style.backgroundColor = '#2ecc71';
+                        setText('connection-status', 'Connected');
+                        setText('latency', '42 ms');
+                        setText('uptime', '00:01:25');
+                        connectBtn.innerHTML = '<i class="fas fa-link"></i> Connected';
+                    }, 2000);
                 };
+            }
 
-                // Connect button
-                document.querySelector('.detail-actions .btn-connect').onclick = function () {
-                    navItems.forEach(li => li.classList.remove('active'));
-                    document.querySelector('[data-section="connect"]').classList.add('active');
-                    contentSections.forEach(s => s.style.display = 'none');
-                    document.getElementById('connect-section').style.display = 'block';
-                    document.getElementById('station-connect').value = station.connect_IP_Address || station.station_code || id;
-                };
-            })
-            .catch(err => {
-                console.error("Error fetching station details:", err);
-                document.getElementById('station-detail-title').textContent = 'No station selected';
-                document.getElementById('station-detail-message').style.display = 'block';
-            });
-    }
+            // Edit button (only if exists)
+            const editBtn = document.getElementById('edit-btn');
+            if (editBtn) {
+                editBtn.onclick = () => window.location.href = `/stations/edit/${id}`;
+            }
+
+        })
+        .catch(err => {
+            console.error("Error fetching station details:", err);
+            alert("Could not load station details. Please try again.");
+        });
+}
+
 
 
 
@@ -478,17 +502,14 @@ document.addEventListener('DOMContentLoaded', function () {
         loadStations(currentPage);
     }
     const manageNav = document.querySelector('[data-section="manage"]');
-    if (manageNav) {
+    if (manageNav && typeof manageNav.addEventListener === 'function') {
         manageNav.addEventListener('click', function () {
-            if (userRole === 'admin') loadStations(currentPage);
+            if (userRole === 'admin' || userRole === 'support' || userRole === 'supporter') {
+                loadStations(currentPage);
+            }
         });
     }
-    const viewNav = document.querySelector('[data-section="view"]');
-    if (viewNav) {
-        viewNav.addEventListener('click', function () {
-            if (userRole === 'support' || userRole === 'supporter') loadStations(currentPage);
-        });
-    }
+
 
     // Connection simulation 
     const connectBtn = document.getElementById('connect-btn');
