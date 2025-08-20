@@ -1,9 +1,3 @@
-from flask_cors import CORS
-import requests
-import socket
-import time
-from urllib.parse import urlparse
-from flask import jsonify
 from sqlalchemy.exc import IntegrityError
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -13,7 +7,6 @@ from flask_migrate import Migrate
 from models import db, Region, District, Group, Role, User, Station
 
 app = Flask(__name__)
-CORS(app)
 app.secret_key = 'your-secret-key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/systeam_support'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -185,8 +178,6 @@ def delete_region(id):
 @app.route('/api/districts', methods=['GET'])
 def get_districts():
     districts = District.query.all()
-    stations = Station.query.all()
-    
     def safe_date(obj, attr):
         val = getattr(obj, attr, None)
         if val:
@@ -198,7 +189,7 @@ def get_districts():
             "district_name": d.district_name,
             "region_id": d.region_id,
             "region_name": Region.query.get(d.region_id).region_name if d.region_id else "",
-            "stations": len([s for s in stations if s.location == d.id]),
+            "stations": 0,
             "last_updated": safe_date(d, "updated_time") or safe_date(d, "created_time")
         } for d in districts
     ])
@@ -639,62 +630,3 @@ with app.app_context():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-# API: Test connection to any external IP or URL
-@app.route('/api/test-connection', methods=['POST'])
-def test_connection():
-    data = request.get_json()
-    url = data.get('url', '').strip()
-
-    if not url:
-        return jsonify({'connected': False, 'message': 'No URL provided'}), 400
-
-    # Parse the URL
-    try:
-        parsed = urlparse(url)
-        if not parsed.scheme:
-            # Default to HTTP if no scheme
-            url = 'http://' + url
-            parsed = urlparse(url)
-        host = parsed.hostname
-        port = parsed.port or (443 if parsed.scheme == 'https' else 80)
-    except Exception as e:
-        return jsonify({'connected': False, 'message': f'Invalid URL: {str(e)}'}), 400
-
-    # Check if host is reachable (TCP handshake)
-    def is_reachable(host, port, timeout=3):
-        try:
-            sock = socket.create_connection((host, port), timeout=timeout)
-            sock.close()
-            return True
-        except Exception:
-            return False
-
-    if not is_reachable(host, port):
-        return jsonify({
-            'connected': False,
-            'message': f'Failed to reach {host}:{port} (device offline or blocked)'
-        }), 200
-
-    # Try HTTP GET
-    try:
-        start_time = time.time()
-        # Disable SSL verification for self-signed certs (common in internal stations)
-        response = requests.get(url, timeout=5, verify=False)
-        rtt = int((time.time() - start_time) * 1000)  # Round-trip time in ms
-
-        # Optional: extract uptime if station sends it
-        uptime = int(response.headers.get('X-Uptime', 3600))  # default: 1 hour
-
-        return jsonify({
-            'connected': True,
-            'message': 'Successfully connected',
-            'latency': rtt,
-            'uptime': uptime
-        }), 200
-    except requests.exceptions.Timeout:
-        return jsonify({'connected': False, 'message': 'Request timed out'}), 200
-    except requests.exceptions.ConnectionError:
-        return jsonify({'connected': False, 'message': 'Connection refused or DNS failed'}), 200
-    except Exception as e:
-        return jsonify({'connected': False, 'message': f'Error: {str(e)}'}), 500
