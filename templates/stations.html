@@ -285,26 +285,30 @@
           <!-- Right: Connect -->
           <div class="col-md-5 border-start">
             <h6><i class="fas fa-plug"></i> Connect</h6>
-            <input type="text" class="form-control mb-2" id="station-connect" placeholder="Enter IP or Station ID">
-            <button class="btn btn-primary w-100 mb-2" id="connect-btn">
-              <i class="fas fa-link"></i> Connect
+            <input 
+                type="text" 
+                class="form-control mb-2" 
+                id="modal-station-connect" 
+                placeholder="Enter IP or Station ID (e.g. 8.8.8.8:5000)">
+            <button class="btn btn-primary w-100 mb-2" id="modal-connect-btn">
+                <i class="fas fa-link"></i> Connect
             </button>
-            <div class="connection-status">
-              <div class="status-indicator">
-                <div class="indicator-circle"></div>
-                <span>Status: <strong id="connection-status">Disconnected</strong></span>
-              </div>
-              <p><small>Latency: <span id="latency">-</span></small></p>
-              <p><small>Uptime: <span id="uptime">-</span></small></p>
+            <div class="connection-status mt-2">
+                <div class="status-indicator">
+                    <div class="indicator-circle"></div>
+                    <span>Status: <strong id="connection-status">Disconnected</strong></span>
+                </div>
+                <p><small>Latency: <span id="latency">-</span></small></p>
+                <p><small>Uptime: <span id="uptime">-</span></small></p>
             </div>
-          </div>
+        </div>
         </div>
       </div>
       <div class="modal-footer">
         {% if role == 'admin' %}
-          <button class="btn btn-secondary" id="edit-btn"><i class="fas fa-edit"></i> Edit</button>
+          <button class="btn-secondary" id="edit-btn"><i class="fas fa-edit"></i> Edit</button>
         {% endif %}
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn-exit" data-bs-dismiss="modal" onclick="window.location.href='/stations'"><i class="fas fa-door-open door-close"></i>Close</button>
       </div>
     </div>
   </div>

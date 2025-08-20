@@ -230,6 +230,25 @@ textarea {
     transform: translateY(-2px);
 }
 
+#edit-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: 1px solid var(--primary-color);
+    padding: 12px 20px;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#edit-btn:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
 .btn-exit {
     background-color: rgb(13, 155, 220);
     color: white;
@@ -431,7 +450,7 @@ textarea {
     border: solid 1px gray;
     border-radius: 10px;
     max-width: 90%;
-    
+
 }
 
 .detail-card {
@@ -503,6 +522,11 @@ textarea {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.modal-header {
+    background-color: var(--primary-color);
+    color: white;
 }
 
 .map-placeholder {

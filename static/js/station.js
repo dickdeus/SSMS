@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let totalPages = 1;
     let currentRegion = '';
     let currentSearch = '';
-        let currentItemsPerPage = itemsPerPage ? parseInt(itemsPerPage.value) : 50;
+    let currentItemsPerPage = itemsPerPage ? parseInt(itemsPerPage.value) : 50;
 
 
 
@@ -99,28 +99,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Fetch stations with filters and pagination
     function loadStations(page = 1) {
-            let url = `/api/stations?page=${page}&per_page=${currentItemsPerPage}`;
-            if (currentRegion) url += `&region_id=${currentRegion}`;
-            if (currentSearch) url += `&search=${encodeURIComponent(currentSearch)}`;
-            // If support, filter by user's district (assume district is available in session or template)
-            if (userRole === 'supporter') {
-                const userDistrict = userRoleInput.getAttribute('data-district');
-                if (userDistrict) {
-                    url += `&district_id=${userDistrict}`;
-                }
+        let url = `/api/stations?page=${page}&per_page=${currentItemsPerPage}`;
+        if (currentRegion) url += `&region_id=${currentRegion}`;
+        if (currentSearch) url += `&search=${encodeURIComponent(currentSearch)}`;
+        // If support, filter by user's district (assume district is available in session or template)
+        if (userRole === 'supporter') {
+            const userDistrict = userRoleInput.getAttribute('data-district');
+            if (userDistrict) {
+                url += `&district_id=${userDistrict}`;
             }
-            fetch(url)
-                .then(res => res.json())
-                .then(data => {
-                    stations = data.items || data;
-                    renderStationsTable(stations);
-                    totalPages = data.total_pages || 1;
-                    pageIndicator.textContent = `Page ${page} of ${totalPages}`;
-                })
-                .catch(err => {
-                    console.error('Error loading stations', err);
-                    stationsTable.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#888;">Error loading stations</td></tr>`;
-                });
+        }
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                stations = data.items || data;
+                renderStationsTable(stations);
+                totalPages = data.total_pages || 1;
+                pageIndicator.textContent = `Page ${page} of ${totalPages}`;
+            })
+            .catch(err => {
+                console.error('Error loading stations', err);
+                stationsTable.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#888;">Error loading stations</td></tr>`;
+            });
     }
 
     // Region filter
@@ -411,83 +411,83 @@ document.addEventListener('DOMContentLoaded', function () {
     setupTableDelegation();
 
     // --- View Station Details ---
-function showStationDetails(id) {
-    console.log("View button clicked for id=", id);
-    console.log("Fetching /api/stations/" + id);
+    function showStationDetails(id) {
+        console.log("View button clicked for id=", id);
+        console.log("Fetching /api/stations/" + id);
 
-    fetch(`/api/stations/${id}`)
-        .then(res => res.ok ? res.json() : Promise.reject(`Server error: ${res.status}`))
-        .then(station => {
-            console.log("Station API response:", station);
+        fetch(`/api/stations/${id}`)
+            .then(res => res.ok ? res.json() : Promise.reject(`Server error: ${res.status}`))
+            .then(station => {
+                console.log("Station API response:", station);
 
-            if (!station || Object.keys(station).length === 0) {
-                alert("No station details found.");
-                return;
-            }
+                if (!station || Object.keys(station).length === 0) {
+                    alert("No station details found.");
+                    return;
+                }
 
-            // Helper to safely set text content
-            const setText = (id, value) => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = value ?? '-';
-            };
-
-            // Fill modal details
-            setText('detail-station-code', station.station_code);
-            setText('detail-station-name', station.station_name);
-            setText('detail-region', station.region_name);
-            setText('detail-district', station.district_name);
-            setText('detail-ip', station.connect_IP_Address);
-            setText('detail-contact', station.contact_name ? `${station.contact_name}, ${station.contact_number}` : '-');
-
-            // Prefill connect input
-            const connectInput = document.getElementById('station-connect');
-            if (connectInput) connectInput.value = station.connect_IP_Address || station.station_code || '';
-
-            // Show modal
-            const modalEl = document.getElementById('stationModal');
-            if (modalEl) {
-                const bsModal = new bootstrap.Modal(modalEl);
-                bsModal.show();
-            }
-
-            // Reset connection UI
-            const connectBtn = document.getElementById('connect-btn');
-            const indicator = document.querySelector('.indicator-circle');
-            setText('connection-status', 'Disconnected');
-            setText('latency', '-');
-            setText('uptime', '-');
-            if (indicator) indicator.style.backgroundColor = '#ccc';
-            if (connectBtn) {
-                connectBtn.disabled = false;
-                connectBtn.innerHTML = '<i class="fas fa-link"></i> Connect';
-                connectBtn.onclick = () => {
-                    connectBtn.disabled = true;
-                    connectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
-                    setText('connection-status', 'Connecting...');
-                    if (indicator) indicator.style.backgroundColor = '#f39c12';
-
-                    setTimeout(() => {
-                        if (indicator) indicator.style.backgroundColor = '#2ecc71';
-                        setText('connection-status', 'Connected');
-                        setText('latency', '42 ms');
-                        setText('uptime', '00:01:25');
-                        connectBtn.innerHTML = '<i class="fas fa-link"></i> Connected';
-                    }, 2000);
+                // Helper to safely set text content
+                const setText = (id, value) => {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = value ?? '-';
                 };
-            }
 
-            // Edit button (only if exists)
-            const editBtn = document.getElementById('edit-btn');
-            if (editBtn) {
-                editBtn.onclick = () => window.location.href = `/stations/edit/${id}`;
-            }
+                // Fill modal details
+                setText('detail-station-code', station.station_code);
+                setText('detail-station-name', station.station_name);
+                setText('detail-region', station.region_name);
+                setText('detail-district', station.district_name);
+                setText('detail-ip', station.connect_IP_Address);
+                setText('detail-contact', station.contact_name ? `${station.contact_name}, ${station.contact_number}` : '-');
 
-        })
-        .catch(err => {
-            console.error("Error fetching station details:", err);
-            alert("Could not load station details. Please try again.");
-        });
-}
+                // Prefill connect input
+                const connectInput = document.getElementById('station-connect');
+                if (connectInput) connectInput.value = station.connect_IP_Address || station.station_code || '';
+
+                // Show modal
+                const modalEl = document.getElementById('stationModal');
+                if (modalEl) {
+                    const bsModal = new bootstrap.Modal(modalEl);
+                    bsModal.show();
+                }
+
+                // Reset connection UI
+                const connectBtn = document.getElementById('connect-btn');
+                const indicator = document.querySelector('.indicator-circle');
+                setText('connection-status', 'Disconnected');
+                setText('latency', '-');
+                setText('uptime', '-');
+                if (indicator) indicator.style.backgroundColor = '#ccc';
+                if (connectBtn) {
+                    connectBtn.disabled = false;
+                    connectBtn.innerHTML = '<i class="fas fa-link"></i> Connect';
+                    connectBtn.onclick = () => {
+                        connectBtn.disabled = true;
+                        connectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
+                        setText('connection-status', 'Connecting...');
+                        if (indicator) indicator.style.backgroundColor = '#f39c12';
+
+                        setTimeout(() => {
+                            if (indicator) indicator.style.backgroundColor = '#2ecc71';
+                            setText('connection-status', 'Connected');
+                            setText('latency', '42 ms');
+                            setText('uptime', '00:01:25');
+                            connectBtn.innerHTML = '<i class="fas fa-link"></i> Connected';
+                        }, 2000);
+                    };
+                }
+
+                // Edit button (only if exists)
+                const editBtn = document.getElementById('edit-btn');
+                if (editBtn) {
+                    editBtn.onclick = () => window.location.href = `/stations/edit/${id}`;
+                }
+
+            })
+            .catch(err => {
+                console.error("Error fetching station details:", err);
+                alert("Could not load station details. Please try again.");
+            });
+    }
 
 
 
@@ -549,3 +549,4 @@ function showStationDetails(id) {
     }
 
 });
+
